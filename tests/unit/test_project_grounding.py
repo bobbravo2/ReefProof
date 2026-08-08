@@ -90,17 +90,10 @@ def write_repo(
         target.write_text("# stub\n", encoding="utf-8")
     if initialize_git:
         git(repo, "init", "-b", "main")
+        git(repo, "config", "user.name", "ReefProof Test")
+        git(repo, "config", "user.email", "reefproof-test@example.invalid")
         git(repo, "add", ".")
-        git(
-            repo,
-            "-c",
-            "user.name=Codex",
-            "-c",
-            "user.email=codex@example.com",
-            "commit",
-            "-m",
-            "test",
-        )
+        git(repo, "commit", "-m", "test")
     return repo
 
 
