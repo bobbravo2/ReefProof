@@ -120,5 +120,5 @@ jobs:
           reefproof:test infra-smoke --format json
       - run: docker volume rm reefproof-test-data
       - run: test "$(docker image inspect reefproof:test --format '{{.Config.User}}')" = reefproof
-      - run: test "$(docker image inspect reefproof:test --format '{{index .Config.Labels \"org.opencontainers.image.source\"}}')" = "https://github.com/bobbravo2/ReefProof"
-      - run: test "$(docker image inspect reefproof:test --format '{{index .Config.Labels \"org.opencontainers.image.revision\"}}')" = "${{ github.sha }}"
+      - run: test "$(docker image inspect reefproof:test --format '{{index .Config.Labels "org.opencontainers.image.source"}}')" = "https://github.com/bobbravo2/ReefProof"
+      - run: test "$(docker image inspect reefproof:test --format '{{index .Config.Labels "org.opencontainers.image.revision"}}')" = "${{ github.sha }}"

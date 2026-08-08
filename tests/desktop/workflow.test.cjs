@@ -33,3 +33,19 @@ test("delivery uploads one unsigned macOS application archive without publishing
   for (const forbidden of ["release", "publish", "codesign", "notarytool"])
     assert.doesNotMatch(job.toLowerCase(), new RegExp(forbidden));
 });
+
+test("delivery validates OCI labels with executable Docker templates", () => {
+  const container = workflow.indexOf("  container:");
+  const job = workflow.slice(container);
+
+  assert.ok(container > 0);
+  assert.match(
+    job,
+    /--format '\{\{index \.Config\.Labels "org\.opencontainers\.image\.source"\}\}'/,
+  );
+  assert.match(
+    job,
+    /--format '\{\{index \.Config\.Labels "org\.opencontainers\.image\.revision"\}\}'/,
+  );
+  assert.doesNotMatch(job, /\\"org\.opencontainers\.image\./);
+});
