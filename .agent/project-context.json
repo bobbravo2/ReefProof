@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "product": {
+    "name": "ReefProof"
+  },
+  "current_gate": "ReefProof v0.1 passes when offline electrical evidence is normalized without leaking secrets and produces one persisted operator verification, the exact immutable OCI artifact is accepted on the private-LAN target LXC, and the packaged desktop passes both local-managed and remote-hosted acceptance including authenticated backup download and strict authority separation.",
+  "architecture": {
+    "main_cli_entrypoint": "src/reefproof/cli.py",
+    "runtime_composition_entrypoint": "src/reefproof/service/runtime.py",
+    "persistence_entrypoint": "src/reefproof/storage/database.py"
+  },
+  "implemented": [
+    "offline authored configuration normalization",
+    "deterministic configuration snapshots",
+    "typed reliability graphs",
+    "PASS, FAIL, and UNKNOWN invariant evaluation",
+    "SQLite evidence persistence",
+    "fresh-install v0.1 SQLite release schema",
+    "accepted versioned API and terminology contract",
+    "public repository governance and security documentation",
+    "OCI image build",
+    "dual-mode desktop and authenticated private-LAN hosted operations",
+    "opaque single-use hosted backup download",
+    "supervisor-owned hosted restart handoff",
+    "TOTP-backed authentication and enrollment"
+  ],
+  "deferred": [
+    "daemon and development reload tooling",
+    "read-only SQLite diagnostics explorer",
+    "expanded workbench",
+    "Home Assistant delivery"
+  ],
+  "absent": [
+    "secret-safe normalized HYDROS snapshot",
+    "resolved observed HYDROS physical ports",
+    "authored electrical-intent overlay",
+    "live HYDROS transport",
+    "HYDROS configuration mutation",
+    "MQTT control publication",
+    "automatic remediation",
+    "published v0.1 release artifacts"
+  ],
+  "unknowns": [
+    "safe allowlisted Tuya properties required for topology",
+    "accepted HYDROS lowPower and maxOnTime field semantics",
+    "authored circuit, protection, backup-power, and load mappings",
+    "packaged dual-mode desktop acceptance result",
+    "immutable target-LXC acceptance result"
+  ]
+}

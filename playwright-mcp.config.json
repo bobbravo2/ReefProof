@@ -1,0 +1,39 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "isolated": true,
+    "launchOptions": {
+      "channel": "chromium",
+      "headless": true
+    },
+    "contextOptions": {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      }
+    },
+    "initPage": [
+      "scripts/playwright-mcp-loopback-guard.cjs"
+    ]
+  },
+  "capabilities": [
+    "core"
+  ],
+  "codegen": "none",
+  "imageResponses": "allow",
+  "network": {
+    "allowedOrigins": [
+      "http://127.0.0.1:8787"
+    ]
+  },
+  "outputDir": ".local/ux-review",
+  "outputMaxSize": 52428800,
+  "saveSession": false,
+  "snapshot": {
+    "mode": "full"
+  },
+  "timeouts": {
+    "action": 5000,
+    "navigation": 10000
+  }
+}

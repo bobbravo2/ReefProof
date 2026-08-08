@@ -1,0 +1,49 @@
+schema_version: "0.1"
+
+reefproof:
+  timezone: America/New_York
+  mode: fixture
+  data_directory: .local/data
+  log_level: INFO
+  json_logs: false
+
+hydros:
+  enabled: false
+  collective_selector: null
+  polling_interval_seconds: 300
+  maximum_config_age_seconds: 600
+  request_timeout_seconds: 20
+  credential_refresh_margin_seconds: 300
+
+evaluation:
+  critical_unknown_policy: alert
+  evaluation_deadline_seconds: 15
+
+storage:
+  # Production containers use /backup when no explicit destination is supplied.
+  # Development should configure a mounted or independently protected root.
+  backup_directory: null
+  # Disabled by default. Snapshots, summaries, findings, transitions, and alert
+  # attempts are always preserved when evaluation detail is pruned.
+  evaluation_detail_retention_days: null
+
+alerts:
+  adapters:
+    - type: console
+    # Home Assistant is explicit opt-in. YAML may enable only the adapter type;
+    # its complete local endpoint and bearer token must come independently from
+    # REEFPROOF_HOME_ASSISTANT_ENDPOINT and REEFPROOF_HOME_ASSISTANT_TOKEN.
+    # - type: home_assistant
+  repeat_critical_after_seconds: 3600
+  send_recovery: true
+
+api:
+  bind: 127.0.0.1
+  port: 8787
+
+annotations:
+  path: config/system.yaml
+
+invariants:
+  paths:
+    - config/invariants

@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(git rev-parse --show-toplevel)"
+cd "$repository_root"
+
+env GIT_CONFIG_GLOBAL=/dev/null git diff --cached --check
+
+changed_workbench_paths="$(env GIT_CONFIG_GLOBAL=/dev/null git diff --cached --name-only -- \
+  src/reefproof/api/web/typescript/workbench.ts \
+  src/reefproof/api/web/static/workbench.js)"
+
+changed_contract_paths="$(env GIT_CONFIG_GLOBAL=/dev/null git diff --cached --name-only -- \
+  src/reefproof/api \
+  docs/adr/0008-versioned-api-and-terminology-contract.md \
+  scripts/export-workbench-openapi.py \
+  tests/integration/test_api.py \
+  src/reefproof/api/web/typescript/workbench-contracts.ts)"
+
+changed_markdown_paths="$(env GIT_CONFIG_GLOBAL=/dev/null git diff --cached --name-only --diff-filter=ACMR -- \
+  '*.md' '*.markdown')"
+
+staged_root=""
+
+cleanup() {
+  if [[ -n "$staged_root" && -d "$staged_root" ]]; then
+    rm -rf -- "$staged_root"
+  fi
+}
+trap cleanup EXIT
+
+prepare_staged_root() {
+  if [[ -n "$staged_root" ]]; then
+    return
+  fi
+
+  staged_root="$(mktemp -d "${TMPDIR:-/tmp}/reefproof-pre-commit.XXXXXX")"
+  env GIT_CONFIG_GLOBAL=/dev/null git checkout-index --all --prefix="$staged_root/"
+  if [[ -d "$repository_root/.venv" ]]; then
+    ln -s "$repository_root/.venv" "$staged_root/.venv"
+  fi
+  if [[ -d "$repository_root/node_modules" ]]; then
+    ln -s "$repository_root/node_modules" "$staged_root/node_modules"
+  fi
+}
+
+run_staged() {
+  prepare_staged_root
+  (
+    cd "$staged_root"
+    env PYTHONPATH="$staged_root/src" "$@"
+  )
+}
+
+if [[ -n "$changed_workbench_paths" ]]; then
+  printf 'Running generated workbench bundle gate for staged changes...\n'
+  run_staged ./scripts/check-generated-workbench.sh
+fi
+
+if [[ -n "$changed_contract_paths" ]]; then
+  printf 'Running ADR 0008 API contract and generated Workbench contract gates...\n'
+  run_staged uv run pytest -q tests/integration/test_api.py::test_openapi_describes_auth_and_groups_only_api_operations
+  run_staged ./scripts/check-generated-workbench-contracts.sh
+fi
+
+if [[ -n "$changed_markdown_paths" ]]; then
+  printf 'Linting Mermaid diagrams in staged Markdown files...\n'
+  node scripts/check-mermaid.mjs --staged
+fi

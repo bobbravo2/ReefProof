@@ -1,0 +1,86 @@
+{
+  "fixture_version": "0.1",
+  "provenance": "AUTHORED",
+  "source_format": "synthetic",
+  "payload": {
+    "captured_at": "2026-07-25T11:05:00-04:00",
+    "entities": [
+      {
+        "key": "return-a",
+        "vendor_id": "synthetic-return-a",
+        "display_name": "Return A",
+        "entity_type": "device",
+        "observed_properties": {
+          "enabled": true
+        },
+        "source_path": "$.devices[0]",
+        "confidence": "high",
+        "vendor_extensions": {}
+      },
+      {
+        "key": "return-b",
+        "vendor_id": "synthetic-return-b",
+        "display_name": "Return B",
+        "entity_type": "device",
+        "observed_properties": {
+          "enabled": true
+        },
+        "source_path": "$.devices[1]",
+        "confidence": "high",
+        "vendor_extensions": {}
+      }
+    ],
+    "authored_entities": [
+      {
+        "key": "power-a",
+        "display_name": "Example Power Domain A",
+        "entity_type": "power_domain",
+        "source": "anonymized-example",
+        "owner": "example-operator",
+        "last_verified": "2026-07-25",
+        "review_after": "2027-01-25"
+      },
+      {
+        "key": "power-b",
+        "display_name": "Example Power Domain B",
+        "entity_type": "power_domain",
+        "source": "anonymized-example",
+        "owner": "example-operator",
+        "last_verified": "2026-07-25",
+        "review_after": "2027-01-25"
+      }
+    ],
+    "annotations": [
+      {
+        "subject_key": "return-a",
+        "relationship": "redundant_with",
+        "target_key": "return-b",
+        "source": "anonymized-example",
+        "owner": "example-operator",
+        "last_verified": "2026-07-25",
+        "review_after": "2027-01-25"
+      },
+      {
+        "subject_key": "return-a",
+        "relationship": "powered_by",
+        "target_key": "power-a",
+        "source": "anonymized-example",
+        "owner": "example-operator",
+        "last_verified": "2026-07-25",
+        "review_after": "2027-01-25"
+      },
+      {
+        "subject_key": "return-b",
+        "relationship": "powered_by",
+        "target_key": "power-b",
+        "source": "anonymized-example",
+        "owner": "example-operator",
+        "last_verified": "2026-07-25",
+        "review_after": "2027-01-25"
+      }
+    ],
+    "vendor_extensions": {
+      "synthetic_notice": "Authored safe example; not an observed HYDROS export."
+    }
+  }
+}

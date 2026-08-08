@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "lib": ["DOM", "ES2022"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "src/reefproof/api/web/static",
+    "rootDir": "src/reefproof/api/web/typescript"
+  },
+  "include": ["src/reefproof/api/web/typescript/**/*.ts"]
+}

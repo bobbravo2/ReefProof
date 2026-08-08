@@ -1,0 +1,124 @@
+name: delivery
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: delivery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - run: ./scripts/bootstrap.sh
+      - run: make check
+
+  binary:
+    name: standalone CLI (${{ matrix.os }})
+    needs: quality
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - run: uv sync --locked
+      - run: ./scripts/build-binary.sh
+      - run: tar -C dist -czf reefproof-${{ runner.os }}-${{ runner.arch }}.tar.gz reefproof
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reefproof-${{ runner.os }}-${{ runner.arch }}
+          path: reefproof-${{ runner.os }}-${{ runner.arch }}.tar.gz
+          if-no-files-found: error
+
+  desktop:
+    name: unsigned macOS desktop app
+    needs: quality
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22.12.0"
+          cache: npm
+      - run: uv sync --locked
+      - run: npm ci
+      - run: make test/desktop
+      - run: make build/desktop-app
+      - name: Archive unsigned application bundle
+        run: |
+          app="dist/desktop/ReefProof-darwin-$(node -p 'process.arch')/ReefProof.app"
+          test -d "$app"
+          ditto -c -k --sequesterRsrc --keepParent "$app" "reefproof-desktop-${RUNNER_OS}-${RUNNER_ARCH}.zip"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reefproof-desktop-${{ runner.os }}-${{ runner.arch }}
+          path: reefproof-desktop-${{ runner.os }}-${{ runner.arch }}.zip
+          if-no-files-found: error
+
+  container:
+    name: OCI image
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: >-
+          docker build --load --tag reefproof:test
+          --build-arg SOURCE="https://github.com/bobbravo2/ReefProof"
+          --build-arg REVISION="${{ github.sha }}"
+          --build-arg CREATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)" .
+      - run: >-
+          docker run --rm --read-only --network=none --cap-drop=all
+          --tmpfs /tmp:rw,noexec,nosuid,nodev reefproof:test version
+      - run: >-
+          docker run --rm --read-only --network=none --cap-drop=all
+          --tmpfs /tmp:rw,noexec,nosuid,nodev reefproof:test doctor
+      - run: docker volume create reefproof-test-data
+      - run: >-
+          docker run --rm --read-only --network=none --cap-drop=all
+          --tmpfs /tmp:rw,noexec,nosuid,nodev
+          --mount source=reefproof-test-data,target=/var/lib/reefproof
+          reefproof:test infra-smoke --format json
+      - run: >-
+          docker run --rm --read-only --network=none --cap-drop=all
+          --tmpfs /tmp:rw,noexec,nosuid,nodev
+          --mount source=reefproof-test-data,target=/var/lib/reefproof
+          reefproof:test infra-smoke --format json
+      - run: docker volume rm reefproof-test-data
+      - run: test "$(docker image inspect reefproof:test --format '{{.Config.User}}')" = reefproof
+      - run: test "$(docker image inspect reefproof:test --format '{{index .Config.Labels \"org.opencontainers.image.source\"}}')" = "https://github.com/bobbravo2/ReefProof"
+      - run: test "$(docker image inspect reefproof:test --format '{{index .Config.Labels \"org.opencontainers.image.revision\"}}')" = "${{ github.sha }}"

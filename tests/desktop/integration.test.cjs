@@ -1,0 +1,48 @@
+const assert = require("node:assert/strict");
+const { execFileSync } = require("node:child_process");
+const { existsSync, readFileSync } = require("node:fs");
+const path = require("node:path");
+const test = require("node:test");
+
+const repo = path.resolve(__dirname, "../..");
+
+test("repository desktop commands use the existing workbench", () => {
+  const dryRun = execFileSync("make", ["-n", "run/desktop"], { cwd: repo, encoding: "utf8" });
+  const packageJson = JSON.parse(readFileSync(path.join(repo, "package.json"), "utf8"));
+  assert.equal(packageJson.productName, "ReefProof");
+  assert.match(dryRun, /npm run desktop:run/);
+  assert.ok(packageJson.scripts["desktop:build"]);
+  assert.ok(packageJson.scripts["desktop:package"]);
+  assert.ok(packageJson.scripts["desktop:test"]);
+  assert.match(packageJson.scripts["desktop:package"], /build-desktop-binary\.sh/);
+  assert.equal(existsSync(path.join(repo, "desktop", "index.html")), false);
+  assert.equal(existsSync(path.join(repo, "desktop", "renderer")), false);
+  assert.equal(existsSync(path.join(repo, "desktop", "assets", "icon.png")), true);
+  const main = readFileSync(path.join(repo, "desktop", "main.mts"), "utf8");
+  assert.match(main, /\/workbench/);
+  assert.match(main, /reefproof/);
+  assert.match(main, /ICON_PATH/);
+  assert.ok(main.indexOf('app.setName("ReefProof")') < main.indexOf("app.whenReady()"));
+  assert.match(main, /setAboutPanelOptions\(\{ applicationName: "ReefProof"/);
+  assert.match(main, /Status & Build Information/);
+  assert.match(main, /Restart Workbench/);
+  assert.match(main, /Run Offline Diagnostics/);
+  assert.match(main, /Download Backup…/);
+  assert.match(main, /resolveDesktopConnection\(process\.env\)/);
+  assert.match(main, /REEFPROOF_DATA_DIRECTORY: path\.join\(app\.getPath\("userData"\), "data"\)/);
+  assert.match(main, /\/v1\/system\/status/);
+  assert.match(main, /remoteOperation\("\/v1\/operations\/diagnostics", "GET"\)/);
+  assert.match(main, /remoteOperation\("\/v1\/operations\/backups", "POST"\)/);
+  assert.match(main, /remoteOperation\("\/v1\/operations\/restart", "POST"\)/);
+  assert.match(main, /\["daemon", "start"\]/);
+  assert.match(main, /\["daemon", "restart"\]/);
+  assert.match(main, /"database",[\s\S]*"backup",[\s\S]*"--root"/);
+  assert.doesNotMatch(main, /REEFPROOF_DESKTOP_PORT/);
+  const packageScript = readFileSync(path.join(repo, "scripts", "package-desktop.mjs"), "utf8");
+  assert.match(packageScript, /pyproject\.toml/);
+  assert.match(packageScript, /extraResource: \[binary, pngIcon\]/);
+  assert.match(packageScript, /\.build", "desktop-runtime/);
+  assert.doesNotMatch(packageScript, /"dist", "reefproof"/);
+  assert.equal(existsSync(path.join(repo, "scripts", "build-desktop-binary.sh")), true);
+  assert.equal(existsSync(path.join(repo, "scripts", "verify-desktop-package.mjs")), true);
+});

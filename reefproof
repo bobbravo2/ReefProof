@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repository_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+environment="${REEFPROOF_ENV:-${REEFPROOF_ENVIRONMENT:-dev}}"
+data_directory="${REEFPROOF_DATA_DIRECTORY:-$repository_root/.local/data}"
+history_file="${REEFPROOF_HISTORY_FILE:-$data_directory/reefproof-cli-history.log}"
+
+record_history() {
+  mkdir -p "$(dirname -- "$history_file")"
+  local timestamp
+  local rendered=("$@")
+  if [[ "${1:-}" == "auth" && "${2:-}" == "totp" ]]; then
+    rendered=("auth" "totp" "[redacted]")
+  fi
+  timestamp="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '%s\t%s\n' "$timestamp" "${rendered[*]}" >> "$history_file"
+}
+
+case "$environment" in
+  dev|development)
+    export REEFPROOF_ENVIRONMENT=development
+    launcher=(uv run --project "$repository_root" reefproof)
+    ;;
+  prod|production)
+    export REEFPROOF_ENVIRONMENT=production
+    binary="$repository_root/dist/reefproof"
+    if [[ ! -x "$binary" ]]; then
+      printf 'FAIL: production ReefProof binary is missing or not executable: %s\n' "$binary" >&2
+      printf '%s\n' 'Build it first with: make build/binary' >&2
+      exit 2
+    fi
+    launcher=("$binary")
+    ;;
+  *)
+    printf 'FAIL: unsupported ReefProof environment: %s\n' "$environment" >&2
+    printf '%s\n' 'Use REEFPROOF_ENV=dev or REEFPROOF_ENV=prod.' >&2
+    exit 2
+    ;;
+esac
+
+if [[ $# -gt 0 ]]; then
+  record_history "$@"
+  exec "${launcher[@]}" "$@"
+fi
+
+if [[ ! -t 0 || ! -t 1 ]]; then
+  record_history --help
+  exec "${launcher[@]}" --help
+fi
+
+export REEFPROOF_MENU_LAUNCHER="$repository_root/reefproof"
+exec "${launcher[@]}" menu

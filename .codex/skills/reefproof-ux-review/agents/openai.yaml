@@ -1,0 +1,4 @@
+interface:
+  display_name: "ReefProof UX Review"
+  short_description: "Review Workbench usability and accessibility"
+  default_prompt: "Use $reefproof-ux-review to perform a bounded usability critique of the local ReefProof Workbench."

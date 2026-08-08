@@ -1,0 +1,4 @@
+interface:
+  display_name: "ReefProof Local CI"
+  short_description: "Run deterministic local build and CI gates"
+  default_prompt: "Use $reefproof-local-ci to run the appropriate one-shot local build or Nektos act validation."

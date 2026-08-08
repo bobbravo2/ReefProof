@@ -1,0 +1,55 @@
+{
+  "Input": {
+    "Example level": {
+      "senseMode": 1,
+      "sensePort": 2,
+      "type": "Input",
+      "unitId": "sanitized-unit"
+    }
+  },
+  "Output": {
+    "Example pump": {
+      "dependency": "",
+      "guid": "sanitized-output-guid",
+      "outputDevice": 1,
+      "type": "Output",
+      "unitId": "sanitized-unit"
+    }
+  },
+  "Schedule": {},
+  "Mode": {
+    "Normal": {
+      "readOnly": true,
+      "type": "Mode",
+      "unitId": "sanitized-unit"
+    }
+  },
+  "WiFiOutlet": {},
+  "TpDevice": {},
+  "Option": {
+    "Option": {
+      "tempFmt": "1",
+      "type": "Option",
+      "unitId": "sanitized-unit"
+    }
+  },
+  "System": {
+    "System": {
+      "friendlyName": "Sanitized Reef",
+      "serialNum": "sanitized-serial",
+      "thingName": "sanitized-thing",
+      "thingType": "Collective",
+      "type": "System",
+      "unitId": "sanitized-unit"
+    }
+  },
+  "Device": {
+    "1": {
+      "device": 1,
+      "friendlyName": "Sanitized controller",
+      "thingType": "Controller",
+      "type": "Device",
+      "unitId": "sanitized-unit"
+    }
+  }
+}

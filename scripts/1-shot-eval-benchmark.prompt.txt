@@ -1,0 +1,34 @@
+You are a fresh Codex agent entering this repository.
+
+Your first and only repository-grounding command MUST be:
+
+python .codex/skills/reefproof-project-grounding/scripts/extract.py --repo . --format json
+
+Run that command immediately.
+
+Before it completes, do not:
+
+- inspect SKILL.md;
+- inspect AGENTS.md;
+- inspect repository source;
+- inspect Git history;
+- search Codex memory;
+- search the web;
+- run any other command.
+
+After reading the extractor output, determine:
+
+- READY: no additional human input is required before proposing work.
+- BLOCKED: one human input or decision is required.
+
+Do not modify the repository.
+
+Return exactly:
+
+STATE: INITIAL_TASK
+RESULT: READY or BLOCKED
+
+EVIDENCE:
+- at most five short lines
+
+Stop immediately after that response.

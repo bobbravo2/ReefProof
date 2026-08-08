@@ -1,0 +1,72 @@
+{
+  "annotation_hash": "sha256:99ad74799bc4e770d568fd31434af9d54e798dfad467326b0cf42d6e6fd18fe1",
+  "annotations": [
+    {
+      "annotation_id": "RP.ANNOTATION.9ae28cbb8ff10c99",
+      "last_verified": "2026-07-25",
+      "owner": "example-operator",
+      "relationship": "powered_by",
+      "review_after": "2027-01-25",
+      "source": "anonymized-example",
+      "subject_id": "RP.DEVICE.48358eaafd15f455",
+      "target_id": "RP.POWER_DOMAIN.fcafdc7cf8107978",
+      "value": null
+    }
+  ],
+  "authored_entities": [
+    {
+      "display_name": "Example Power Domain",
+      "entity_type": "power_domain",
+      "last_verified": "2026-07-25",
+      "owner": "example-operator",
+      "reefproof_id": "RP.POWER_DOMAIN.fcafdc7cf8107978",
+      "review_after": "2027-01-25",
+      "source": "anonymized-example"
+    }
+  ],
+  "captured_at": "2026-07-25T10:31:04-04:00",
+  "completeness_warnings": [
+    "Unmodeled fixture-level vendor extensions are preserved.",
+    "One or more observed entities have unknown confidence."
+  ],
+  "configuration_hash": "sha256:19c1f0c1e0d1e6f1fbfa3cefd14be83f103c6f94e4c83f2ae059cf2fca813f01",
+  "entities": [
+    {
+      "captured_at": "2026-07-25T10:31:04-04:00",
+      "confidence": "high",
+      "display_name": "Example Controller",
+      "entity_type": "controller",
+      "observed_properties": {
+        "member_count": 1
+      },
+      "raw_configuration_hash": "sha256:19c1f0c1e0d1e6f1fbfa3cefd14be83f103c6f94e4c83f2ae059cf2fca813f01",
+      "reefproof_id": "RP.CONTROLLER.03ebb338febd5470",
+      "source_path": "$.controllers[0]",
+      "vendor_extensions": {
+        "authored_example": true
+      },
+      "vendor_id": "synthetic-controller-a"
+    },
+    {
+      "captured_at": "2026-07-25T10:31:04-04:00",
+      "confidence": "unknown",
+      "display_name": "Example Return",
+      "entity_type": "device",
+      "observed_properties": {
+        "enabled": true
+      },
+      "raw_configuration_hash": "sha256:19c1f0c1e0d1e6f1fbfa3cefd14be83f103c6f94e4c83f2ae059cf2fca813f01",
+      "reefproof_id": "RP.DEVICE.48358eaafd15f455",
+      "source_path": "$.devices[0]",
+      "vendor_extensions": {},
+      "vendor_id": null
+    }
+  ],
+  "provenance": "AUTHORED",
+  "snapshot_hash": "sha256:3493f31704be105adcac9fa418fe540eeddc9c6d89b33d3b81d5d61cbd257cb1",
+  "snapshot_version": "0.1",
+  "source_format": "synthetic",
+  "vendor_extensions": {
+    "synthetic_notice": "Authored test data; not an observed HYDROS export."
+  }
+}

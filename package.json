@@ -1,0 +1,39 @@
+{
+  "name": "reefproof-web",
+  "productName": "ReefProof",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": ".build/desktop/main.mjs",
+  "scripts": {
+    "build": "npm run contracts:generate && tsc --project tsconfig.json",
+    "check": "npm run contracts:check && tsc --project tsconfig.json --noEmit",
+    "contracts:export": "uv run python scripts/export-workbench-openapi.py",
+    "contracts:generate": "npm run contracts:export && openapi-typescript .local/workbench-openapi.json --output src/reefproof/api/web/typescript/workbench-contracts.ts",
+    "contracts:check": "uv run python scripts/export-workbench-openapi.py --output .local/workbench-openapi-check.json && openapi-typescript .local/workbench-openapi-check.json --output .local/workbench-contracts-check.ts && cmp .local/workbench-contracts-check.ts src/reefproof/api/web/typescript/workbench-contracts.ts",
+    "test": "npm run build && node --test tests/web/*.test.cjs",
+    "desktop:build": "tsc --project desktop/tsconfig.json",
+    "desktop:icons": "uv run python scripts/build-desktop-icons.py",
+    "desktop:package": "./scripts/build-desktop-binary.sh && npm run desktop:build && npm run desktop:icons && node scripts/package-desktop.mjs && node scripts/verify-desktop-package.mjs",
+    "desktop:run": "npm run desktop:build && electron .",
+    "desktop:test": "npm run desktop:build && node --test tests/desktop/*.test.cjs",
+    "mermaid:check": "node scripts/check-mermaid.mjs",
+    "ux:install-browser": "playwright install chromium",
+    "ux:mcp": "playwright-mcp --config playwright-mcp.config.json"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.0.4",
+    "@playwright/mcp": "0.0.78",
+    "electron": "43.2.0",
+    "jsdom": "26.1.0",
+    "mermaid": "11.12.0",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.8.3"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.8",
+    "js-yaml": "4.3.0",
+    "minimatch": "10.2.5"
+  }
+}

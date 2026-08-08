@@ -1,0 +1,4 @@
+interface:
+  display_name: "ReefProof CLI Startup Benchmark"
+  short_description: "Measure ReefProof CLI startup latency"
+  default_prompt: "Use $reefproof-cli-startup-benchmark to measure the real ReefProof CLI launch path and report compact timing evidence."

@@ -1,0 +1,227 @@
+schema_version: "0.1"
+
+evaluations:
+  - id: BASELINE-001
+    name: Agent baseline files exist
+    command: ./scripts/check-baseline.sh
+    status: active
+
+  - id: BASELINE-002
+    name: Safety boundary is documented
+    command: ./scripts/check-baseline.sh
+    status: active
+
+  - id: BASELINE-003
+    name: No premature HYDROS transport or MQTT implementation exists
+    command: ./scripts/check-baseline.sh
+    status: active
+
+  - id: PHASE0-001
+    name: Phase 0 quality and acceptance checks pass
+    command: make check
+    status: active
+
+  - id: API-001
+    name: Versioned API contract matches every ADR 0008 matrix column
+    command: uv run pytest -q -n 0 tests/integration/test_api.py::test_openapi_describes_auth_and_groups_only_api_operations
+    status: active
+
+  - id: USAGE-001
+    name: Agent usage ledgers are valid
+    command: ./scripts/agent-usage.sh validate
+    status: active
+
+  - id: COACH-001
+    name: Native ReefProof review agents are structurally read-only and documented
+    command: uv run pytest tests/unit/test_coach_agent.py
+    status: active
+
+  - id: UX-001
+    name: Playwright MCP UX review harness is pinned loopback-only and advisory
+    command: node --test tests/web/playwright_mcp_harness.test.cjs
+    status: active
+
+  - id: PHASE1-001
+    name: Offline canonical configuration snapshots are deterministic
+    command: uv run pytest tests/unit/test_configuration_fixtures.py tests/unit/test_cli.py
+    status: active
+
+  - id: DELIVERY-001
+    name: Standalone CLI builds and passes offline smoke tests
+    command: make build/binary
+    status: active
+
+  - id: DELIVERY-002
+    name: OCI image builds and passes read-only runtime smoke tests
+    command: make build/container
+    status: active
+
+  - id: DELIVERY-003
+    name: GitHub Actions delivery container job passes locally
+    command: ./scripts/run-local-delivery.sh
+    status: active
+
+  - id: SRE-001
+    name: Offline infrastructure smoke is deterministic, durable, and network-free
+    command: uv run pytest tests/unit/test_infra_smoke.py
+    status: active
+
+  - id: SAFETY-001
+    name: Runtime contains no MQTT publication capability
+    command: uv run pytest tests/safety/test_no_mqtt_publication.py
+    status: active
+
+  - id: PHASE2-001
+    name: Typed reliability graph preserves provenance and explains correlations
+    command: uv run pytest tests/unit/test_reliability_graph.py tests/unit/test_cli.py
+    status: active
+
+  - id: PHASE3-001
+    name: RP-CIRC-001 returns PASS FAIL and UNKNOWN with evidence
+    command: uv run pytest tests/unit/test_invariants.py tests/unit/test_cli.py
+    status: active
+
+  - id: PHASE3-002
+    name: RP-LOGIC-001 detects cycles without treating incomplete evidence as safe
+    command: uv run pytest tests/unit/test_logic_invariant.py tests/unit/test_invariants.py tests/unit/test_cli.py
+    status: active
+
+  - id: PHASE3-003
+    name: RP-MODE-001 requires finite timeouts and complete service-mode evidence
+    command: uv run pytest tests/unit/test_mode_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-004
+    name: RP-HEAT-002 distinguishes confirmed missing and unknown safeguards
+    command: uv run pytest tests/unit/test_heater_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-005
+    name: RP-FLOW-001 requires an explicit adequate-flow dependency for active UV
+    command: uv run pytest tests/unit/test_uv_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-006
+    name: RP-FLOW-002 requires an explicit adequate-flow dependency for active chillers
+    command: uv run pytest tests/unit/test_chiller_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-007
+    name: RP-WATER-001 requires bounded active ATO freshwater addition
+    command: uv run pytest tests/unit/test_ato_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-008
+    name: RP-WATER-002 requires independent automated RODI high-high protection
+    command: uv run pytest tests/unit/test_rodi_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-009
+    name: RP-FALLBACK-001 requires known and assessed critical fallback behavior
+    command: uv run pytest tests/unit/test_fallback_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-010
+    name: RP-CIRC-003 requires battery-approved Low Power circulation
+    command: uv run pytest tests/unit/test_low_power_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-011
+    name: RP-HEAT-001 detects typed redundant-heater failure-domain correlation
+    command: uv run pytest tests/unit/test_heater_redundancy_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-012
+    name: RP-CIRC-002 requires a surviving path in every complete operating mode
+    command: uv run pytest tests/unit/test_surviving_circulation_invariant.py tests/unit/test_invariants.py
+    status: active
+
+  - id: PHASE3-013
+    name: Monitor confidence rules distinguish stale unhealthy and unverified states
+    command: uv run pytest tests/unit/test_monitor_invariants.py
+    status: active
+
+  - id: PHASE4-001
+    name: SQLite preserves distinct evidence and deduplicated finding transitions
+    command: uv run pytest tests/unit/test_storage.py
+    status: active
+
+  - id: DB-CONTRACT-001
+    name: Fresh v0.1 SQLite schema persists and reopens normalized HYDROS evidence
+    command: uv run pytest tests/unit/test_storage.py tests/unit/test_project_store.py tests/unit/test_trust.py tests/integration/test_hydros_import.py tests/unit/test_infra_smoke.py tests/integration/test_service_runtime.py
+    status: active
+
+  - id: PHASE5-001
+    name: Alert policy deduplicates critical findings repeats and recovery
+    command: uv run pytest tests/unit/test_alert_policy.py tests/unit/test_alert_coordinator.py
+    status: active
+
+  - id: ACCEPTANCE-001
+    name: Fixture safety loop alerts once deduplicates and recovers once
+    command: uv run pytest tests/integration/test_fixture_alert_loop.py
+    status: active
+
+  - id: PHASE4-002
+    name: Local API exposes truthful health status findings and bounded metrics
+    command: uv run pytest tests/integration/test_api.py tests/unit/test_service_health.py
+    status: active
+
+  - id: PHASE4-003
+    name: Service runtime wires fixture evaluation persistence alerting and API state
+    command: uv run pytest tests/integration/test_service_runtime.py
+    status: active
+
+  - id: PHASE4-004
+    name: Runtime and durable evidence metrics are truthful and bounded
+    command: uv run pytest tests/integration/test_api.py tests/unit/test_storage.py
+    status: active
+
+  - id: STATE-001
+    name: Project truth, recommendations, and sitemap are deterministic without an LLM
+    command: uv run pytest tests/unit/test_project_state.py tests/unit/test_recommendations.py tests/unit/test_information_architecture.py tests/safety/test_project_state_boundary.py
+    status: active
+
+  - id: STATE-002
+    name: Project authority chains persist replay and survive verified restore
+    command: uv run pytest tests/unit/test_project_store.py tests/unit/test_project_brief.py tests/unit/test_physical_proposals.py tests/unit/test_storage_admin.py
+    status: active
+
+  - id: STATE-003
+    name: Authenticated project API validates and reviews candidates without controller mutation
+    command: uv run pytest tests/integration/test_project_api.py tests/unit/test_candidate_validation.py tests/unit/test_project_store.py tests/unit/test_physical_proposals.py
+    status: active
+
+  - id: AUTH-001
+    name: Signed browser sessions bind candidate review to configured authority
+    command: uv run pytest tests/unit/test_sessions.py tests/safety/test_identity_boundary.py tests/integration/test_project_api.py tests/integration/test_service_runtime.py
+    status: active
+
+  - id: DAEMON-001
+    name: Local daemon PID lifecycle and CLI help are bounded and documented
+    command: uv run pytest tests/unit/test_service_lifecycle.py tests/unit/test_cli.py
+    status: active
+
+  - id: TRUST-001
+    name: Projection-only trust revocation is immutable authority-bound and replay protected
+    command: uv run pytest tests/unit/test_trust.py tests/unit/test_auth_totp.py tests/integration/test_project_api.py tests/safety/test_project_state_boundary.py
+    status: active
+
+  - id: DB-001
+    name: SQLite explorer is authenticated query-only bounded and browser-rendered
+    command: uv run pytest tests/unit/test_storage_explorer.py tests/integration/test_database_explorer_api.py tests/integration/test_workbench_pages.py && node --test tests/web/workbench.test.cjs
+    status: experimental
+
+  - id: DESKTOP-001
+    name: Electron shell securely renders the existing Workbench and owns server cleanup
+    command: make test/desktop
+    status: active
+
+  - id: PHASE5-002
+    name: Home Assistant adapter posts only the exact configured alert event
+    command: uv run pytest tests/unit/test_home_assistant_adapter.py
+    status: active
+
+  - id: PHASE5-003
+    name: Multiple alert adapters fan out deduplicate retry and degrade independently
+    command: uv run pytest tests/unit/test_alert_coordinator.py tests/integration/test_fixture_alert_loop.py tests/integration/test_service_runtime.py
+    status: active

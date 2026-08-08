@@ -1,0 +1,74 @@
+[project]
+name = "reefproof"
+version = "0.1.0"
+description = "Configuration assurance for living systems"
+readme = "README.md"
+license = "MIT"
+keywords = ["aquarium", "configuration-assurance", "reef", "reliability"]
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "alembic>=1.16,<2",
+  "anyio>=4.9,<5",
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "jinja2>=3.1,<4",
+  "prometheus-client>=0.22,<1",
+  "prompt-toolkit>=3.0.51,<4",
+  "pydantic>=2.11,<3",
+  "pyotp>=2.9,<3",
+  "pyyaml>=6.0,<7",
+  "qrcode[pil]>=8.2,<9",
+  "starlette>=0.47,<1",
+  "structlog>=25.4,<26",
+  "typer>=0.16,<1",
+  "uvicorn>=0.35,<1",
+  "itsdangerous>=2.2,<3",
+]
+
+[project.urls]
+Homepage = "https://github.com/bobbravo2/ReefProof"
+Issues = "https://github.com/bobbravo2/ReefProof/issues"
+Repository = "https://github.com/bobbravo2/ReefProof.git"
+
+[project.scripts]
+reefproof = "reefproof.cli:app"
+
+[dependency-groups]
+dev = [
+  "pyright>=1.1.403,<2",
+  "pytest>=8.4,<9",
+  "pytest-xdist>=3.8,<4",
+  "ruff>=0.12,<1",
+]
+build = [
+  "pyinstaller>=6.15,<7",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.0,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "reefproof"
+module-root = "src"
+
+[tool.uv]
+# Keep project commands usable in sandboxed and shared-agent environments where
+# the user-level cache may be inaccessible. `.cache/` is gitignored.
+cache-dir = ".cache/uv"
+
+[tool.pytest.ini_options]
+addopts = "-q -n 8 --dist worksteal"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"
+include = ["src", "tests", "scripts"]

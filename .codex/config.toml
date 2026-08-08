@@ -1,0 +1,17 @@
+[mcp_servers.reefproof_playwright]
+command = "npm"
+args = ["run", "--silent", "ux:mcp"]
+startup_timeout_sec = 20
+tool_timeout_sec = 60
+
+[mcp_servers.reefproof_playwright.tools.browser_resize]
+approval_mode = "approve"
+
+[mcp_servers.reefproof_playwright.tools.browser_click]
+approval_mode = "approve"
+
+[mcp_servers.reefproof_playwright.tools.browser_navigate]
+approval_mode = "approve"
+
+[mcp_servers.reefproof_playwright.tools.browser_close]
+approval_mode = "approve"
