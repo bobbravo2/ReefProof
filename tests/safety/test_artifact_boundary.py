@@ -113,3 +113,18 @@ def test_workflow_actions_use_node_24_capable_releases() -> None:
         matching_lines = [line for line in workflows.splitlines() if f"uses: {action}@" in line]
         assert matching_lines, action
         assert all(line.endswith(release) for line in matching_lines), (action, matching_lines)
+
+
+def test_uv_caches_are_isolated_between_concurrent_workflow_jobs() -> None:
+    workflows = "\n".join(
+        path.read_text(encoding="utf-8") for path in Path(".github/workflows").glob("*.yml")
+    )
+    setup_count = workflows.count("uses: astral-sh/setup-uv@")
+    suffixes = {
+        line.split(":", maxsplit=1)[1].strip()
+        for line in workflows.splitlines()
+        if line.strip().startswith("cache-suffix:")
+    }
+
+    assert setup_count == 5
+    assert len(suffixes) == setup_count
