@@ -91,3 +91,25 @@ def test_all_workflow_actions_are_immutably_pinned() -> None:
                 assert all(character in "0123456789abcdef" for character in reference), (
                     workflow_path
                 )
+
+
+def test_workflow_actions_use_node_24_capable_releases() -> None:
+    workflows = "\n".join(
+        path.read_text(encoding="utf-8") for path in Path(".github/workflows").glob("*.yml")
+    )
+    required_releases = {
+        "actions/checkout": "# v7.0.1",
+        "actions/setup-python": "# v7.0.0",
+        "actions/setup-node": "# v7.0.0",
+        "actions/upload-artifact": "# v7.0.1",
+        "astral-sh/setup-uv": "# v9.0.0",
+        "docker/login-action": "# v4.6.0",
+        "docker/setup-buildx-action": "# v4.2.0",
+        "docker/metadata-action": "# v6.2.0",
+        "docker/build-push-action": "# v7.3.0",
+    }
+
+    for action, release in required_releases.items():
+        matching_lines = [line for line in workflows.splitlines() if f"uses: {action}@" in line]
+        assert matching_lines, action
+        assert all(line.endswith(release) for line in matching_lines), (action, matching_lines)

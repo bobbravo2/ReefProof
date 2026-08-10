@@ -200,8 +200,9 @@ accepted on the target Proxmox LXC:
 Published OCI releases use `ghcr.io/bobbravo2/reefproof` and immutable digests.
 The tag, package version, CLI identity, and OCI metadata must agree. Hosted
 release automation must record provenance, SPDX SBOM, vulnerability results,
-and the registry-reported digest. No local build proves publication or hosted
-attestation success.
+and the registry-reported digest. It creates a GitHub Release whose receipt and
+attached supply-chain evidence expose that digest through the repository UI.
+No local build proves publication or hosted attestation success.
 
 ## Electron desktop
 

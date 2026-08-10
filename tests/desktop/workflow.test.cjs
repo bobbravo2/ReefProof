@@ -7,6 +7,10 @@ const workflow = readFileSync(
   path.resolve(__dirname, "../../.github/workflows/delivery.yml"),
   "utf8",
 );
+const releaseWorkflow = readFileSync(
+  path.resolve(__dirname, "../../.github/workflows/release.yml"),
+  "utf8",
+);
 
 test("delivery builds the desktop app from the checked-out commit after quality", () => {
   const desktop = workflow.indexOf("  desktop:");
@@ -48,4 +52,18 @@ test("delivery validates OCI labels with executable Docker templates", () => {
     /--format '\{\{index \.Config\.Labels "org\.opencontainers\.image\.revision"\}\}'/,
   );
   assert.doesNotMatch(job, /\\"org\.opencontainers\.image\./);
+});
+
+test("tag publication creates a GitHub release with immutable deployment evidence", () => {
+  assert.match(releaseWorkflow, /contents: write/);
+  assert.match(releaseWorkflow, /gh release create "\$GITHUB_REF_NAME"/);
+  assert.match(releaseWorkflow, /reefproof-release\.md#release-receipt\.md/);
+  assert.match(releaseWorkflow, /reefproof\.spdx\.json#reefproof\.spdx\.json/);
+  assert.match(
+    releaseWorkflow,
+    /reefproof\.vulnerabilities\.json#reefproof\.vulnerabilities\.json/,
+  );
+  assert.match(releaseWorkflow, /--verify-tag/);
+  assert.match(releaseWorkflow, /--notes-file reefproof-release\.md/);
+  assert.match(releaseWorkflow, /Deploy the immutable OCI digest above/);
 });

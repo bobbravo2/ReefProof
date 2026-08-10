@@ -248,7 +248,11 @@ make build
 Deploy published images by immutable digest. The image runs as the unprivileged
 `reefproof` user, defaults to the `version` command, and requires writable
 persistent storage at `/var/lib/reefproof` even when the container root is
-read-only. A hardened offline smoke check is:
+read-only. Each [GitHub Release](https://github.com/bobbravo2/ReefProof/releases)
+includes a release receipt with the registry-reported digest, SPDX SBOM, and
+HIGH/CRITICAL vulnerability report; the discoverable image is also listed in
+[GitHub Packages](https://github.com/bobbravo2/ReefProof/pkgs/container/reefproof).
+A hardened offline smoke check is:
 
 ```bash
 podman run --rm --read-only --read-only-tmpfs=false \
