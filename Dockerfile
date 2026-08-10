@@ -3,7 +3,7 @@ ARG REVISION=unknown
 ARG VERSION=0.1.0
 ARG CREATED=unknown
 
-FROM python:3.13.3-slim-bookworm@sha256:5cc3361b5df0f3af709d5bb6c387361d9b2262ea4155dae6c701a2f66eb73b67 AS builder
+FROM python:3.13-alpine@sha256:c25cd44f45df1279a2cba589e67dfcd9db04647ea483b117a7de8b1a99bdfb23 AS builder
 
 ARG SOURCE
 ARG REVISION
@@ -31,7 +31,7 @@ RUN find /app/.venv -type f \
       \( -name direct_url.json -o -name uv_cache.json \) \
       -delete
 
-FROM python:3.13.3-slim-bookworm@sha256:5cc3361b5df0f3af709d5bb6c387361d9b2262ea4155dae6c701a2f66eb73b67 AS runtime
+FROM python:3.13-alpine@sha256:c25cd44f45df1279a2cba589e67dfcd9db04647ea483b117a7de8b1a99bdfb23 AS runtime
 
 ARG SOURCE
 ARG REVISION
@@ -51,8 +51,8 @@ ENV PATH="/app/.venv/bin:$PATH" \
     REEFPROOF_ENVIRONMENT=production \
     REEFPROOF_DATA_DIRECTORY=/var/lib/reefproof
 
-RUN groupadd --system reefproof \
-    && useradd --system --gid reefproof --home-dir /nonexistent --shell /usr/sbin/nologin reefproof \
+RUN addgroup --system reefproof \
+    && adduser --system --ingroup reefproof --home /nonexistent --shell /sbin/nologin reefproof \
     && mkdir -p /var/lib/reefproof \
     && chown reefproof:reefproof /var/lib/reefproof
 

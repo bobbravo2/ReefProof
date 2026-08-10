@@ -76,7 +76,7 @@ def test_container_removes_local_install_metadata() -> None:
 
     assert "-name direct_url.json" in dockerfile
     assert "-name uv_cache.json" in dockerfile
-    assert dockerfile.count("python:3.13.3-slim-bookworm@sha256:") == 2
+    assert dockerfile.count("python:3.13-alpine@sha256:") == 2
     assert "ghcr.io/astral-sh/uv:0.11.32@sha256:" in dockerfile
 
 
