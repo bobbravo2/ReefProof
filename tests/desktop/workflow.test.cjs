@@ -56,6 +56,10 @@ test("delivery validates OCI labels with executable Docker templates", () => {
 
 test("tag publication creates a GitHub release with immutable deployment evidence", () => {
   assert.match(releaseWorkflow, /contents: write/);
+  assert.equal(
+    (releaseWorkflow.match(/create-storage-record: false/g) ?? []).length,
+    2,
+  );
   assert.match(releaseWorkflow, /gh release create "\$GITHUB_REF_NAME"/);
   assert.match(releaseWorkflow, /reefproof-release\.md#release-receipt\.md/);
   assert.match(releaseWorkflow, /reefproof\.spdx\.json#reefproof\.spdx\.json/);
