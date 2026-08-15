@@ -74,5 +74,22 @@ run_read_only=(
 "${run_read_only[@]}" \
   --mount "source=$volume_name,target=/var/lib/reefproof" \
   "$image_tag" infra-smoke --format json >/dev/null
+"${run_read_only[@]}" \
+  --mount "source=$volume_name,target=/var/lib/reefproof" \
+  --entrypoint /bin/sh \
+  "$image_tag" -c '
+    reefproof serve --bind 127.0.0.1 --port 18787 --no-open --no-reload >/tmp/serve.log 2>&1 &
+    reefproof_server_pid=$!
+    trap "kill $reefproof_server_pid 2>/dev/null || true" EXIT
+    for attempt in 1 2 3 4 5 6 7 8 9 10; do
+      if wget -q -O /tmp/workbench.js http://127.0.0.1:18787/assets/workbench.js; then
+        grep -Fq "const API_ROOT" /tmp/workbench.js
+        exit 0
+      fi
+      sleep 1
+    done
+    cat /tmp/serve.log >&2
+    exit 1
+  '
 
 printf 'PASS: built and smoke-tested %s with %s\n' "$image_tag" "$container_tool"

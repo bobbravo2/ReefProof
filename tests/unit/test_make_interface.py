@@ -175,6 +175,9 @@ def test_build_stage_excludes_sensitive_state(tmp_path: Path) -> None:
         '"""reefproof"""\n',
         encoding="utf-8",
     )
+    workbench_bundle = repo / "src/reefproof/api/web/static/workbench.js"
+    workbench_bundle.parent.mkdir(parents=True)
+    workbench_bundle.write_text("export {};\n", encoding="utf-8")
 
     (repo / "scripts").mkdir()
     (repo / "scripts/write-build-identity.py").write_text(
@@ -211,6 +214,7 @@ def test_build_stage_excludes_sensitive_state(tmp_path: Path) -> None:
             "pyproject.toml",
             "uv.lock",
             "src/reefproof/__init__.py",
+            "src/reefproof/api/web/static/workbench.js",
             "scripts/write-build-identity.py",
         ],
         cwd=repo,
@@ -238,6 +242,7 @@ def test_build_stage_excludes_sensitive_state(tmp_path: Path) -> None:
         "pyproject.toml",
         "uv.lock",
         "src/reefproof/__init__.py",
+        "src/reefproof/api/web/static/workbench.js",
         "scripts/write-build-identity.py",
     ):
         assert (staged / expected).is_file(), expected
@@ -250,6 +255,25 @@ def test_build_stage_excludes_sensitive_state(tmp_path: Path) -> None:
         "build",
     ):
         assert not (staged / excluded).exists(), excluded
+
+    subprocess.run(
+        ["git", "rm", "--cached", "src/reefproof/api/web/static/workbench.js"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    missing_bundle = run_python(
+        "scripts/build-stage.py",
+        "--repo",
+        str(repo),
+        "--output",
+        ".build/missing-bundle",
+        cwd=repo,
+    )
+    assert missing_bundle.returncode != 0
+    assert "missing tracked release input" in missing_bundle.stderr
+    assert "src/reefproof/api/web/static/workbench.js" in missing_bundle.stderr
 
 
 def test_build_manifest_checksums_and_verify_bundle(tmp_path: Path) -> None:

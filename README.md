@@ -4,7 +4,7 @@
 
 # ReefProof
 
-ReefProof 0.1.0 is an offline configuration-assurance workbench for living
+ReefProof 0.1.1 is an offline configuration-assurance workbench for living
 systems. It normalizes explicit local evidence, builds typed reliability
 graphs, evaluates versioned safety invariants, and preserves results in SQLite.
 Operators can use the CLI, the browser Workbench, or the macOS desktop shell.
@@ -13,7 +13,7 @@ HYDROS remains runtime authority.
 
 > ReefProof may observe, model, challenge, and alert on a living system. It may not silently take control of one.
 
-v0.1.0 has no live HYDROS transport. It cannot change controller configuration
+v0.1.1 has no live HYDROS transport. It cannot change controller configuration
 or equipment, publish MQTT messages, or perform automatic remediation. Bundled
 examples are synthetic; manual Workbench evidence is labeled
 `MANUAL / NOT LIVE`.

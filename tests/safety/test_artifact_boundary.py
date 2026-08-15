@@ -73,11 +73,14 @@ def test_docker_context_excludes_local_and_private_state() -> None:
 
 def test_container_removes_local_install_metadata() -> None:
     dockerfile = Path("Dockerfile").read_text(encoding="utf-8")
+    build_script = Path("scripts/build-container.sh").read_text(encoding="utf-8")
 
     assert "-name direct_url.json" in dockerfile
     assert "-name uv_cache.json" in dockerfile
     assert dockerfile.count("python:3.13-alpine@sha256:") == 2
     assert "ghcr.io/astral-sh/uv:0.11.32@sha256:" in dockerfile
+    assert "http://127.0.0.1:18787/assets/workbench.js" in build_script
+    assert 'grep -Fq "const API_ROOT" /tmp/workbench.js' in build_script
 
 
 def test_all_workflow_actions_are_immutably_pinned() -> None:

@@ -46,7 +46,7 @@ def test_version_reports_build_identity() -> None:
     result = runner.invoke(app, ["version"])
 
     assert result.exit_code == 0
-    assert "ReefProof 0.1.0" in result.stdout
+    assert "ReefProof 0.1.1" in result.stdout
     assert "Python 3.13" in result.stdout
     assert "Git commit:" in result.stdout
     assert "Build state:" in result.stdout

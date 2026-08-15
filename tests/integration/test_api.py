@@ -362,6 +362,7 @@ def test_workbench_is_backend_authored_external_and_conspicuously_manual(
     assert "Mock Collective" in page.text
     assert "MANUAL / NOT LIVE" in page.text
     assert '<script type="module" src="/assets/workbench.js?v=' in page.text
+    assert '<form id="startup-session-form" class="session-auth-form" method="post">' in page.text
     assert 'aria-label="Main navigation"' in page.text
     assert "Manual return-flow check" in page.text
     assert "Author one bounded return-flow policy" in page.text

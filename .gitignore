@@ -62,6 +62,3 @@ htmlcov/
 *.pid
 reefproof.spdx.json
 reefproof.vulnerabilities.json
-
-# Generated browser workbench bundle.
-src/reefproof/api/web/static/workbench.js

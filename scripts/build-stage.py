@@ -18,6 +18,8 @@ ALLOWLIST = (
     Path("uv.lock"),
 )
 
+REQUIRED_RELEASE_FILES = (Path("src/reefproof/api/web/static/workbench.js"),)
+
 
 def tracked_files(repo_root: Path) -> list[Path]:
     command = ["git", "-C", str(repo_root), "ls-files", "-z", "--", *map(str, ALLOWLIST)]
@@ -32,6 +34,10 @@ def tracked_files(repo_root: Path) -> list[Path]:
         )
         if not present:
             raise FileNotFoundError(f"missing tracked build input: {required}")
+
+    for required in REQUIRED_RELEASE_FILES:
+        if required not in paths:
+            raise FileNotFoundError(f"missing tracked release input: {required}")
 
     return sorted(paths, key=lambda path: path.as_posix())
 
