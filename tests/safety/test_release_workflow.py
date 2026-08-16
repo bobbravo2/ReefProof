@@ -83,6 +83,14 @@ def test_release_requires_human_notes_and_appends_technical_evidence() -> None:
     assert "/^\\| Release evidence \\|/" in sync_workflow
     assert "gh release edit" in sync_workflow
 
+    for notes_path in Path("docs/releases").glob("v*.md"):
+        notes = notes_path.read_text(encoding="utf-8")
+        tag = notes_path.stem
+        assert notes.startswith(f"# ReefProof {tag}\n")
+        assert "## What changed" in notes
+        assert "## Changelog" in notes
+        assert "## Safety boundary" in notes
+
 
 def test_release_tag_verifier_accepts_only_the_package_version() -> None:
     from reefproof import __version__
