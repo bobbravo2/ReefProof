@@ -312,6 +312,7 @@ without its WAL sidecars. Destinations must be new and are never overwritten.
 - [Security policy](SECURITY.md)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 - [Open-source release checklist](docs/open-source-release-checklist.md)
+- [Release and release-notes runbook](docs/releasing.md)
 
 Historical plans and evidence ledgers are retained under `docs/plans/` and
 `docs/archive/`; they are not current release status.

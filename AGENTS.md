@@ -102,7 +102,7 @@ commit, review the staged paths and run `git diff --cached --check`. Pushes,
 tags, publication, deployment, and live HYDROS access require separate authority.
 
 Keep generated artifacts with their source. For Workbench source and generated
-asset commands, follow `CONTRIBUTING.md`; do not edit generated JavaScript.
+asset commands, follow `CONTRIBUTING.md`; do not edit generated JavaScript. For release, tag, GHCR, or release-notes work, follow `docs/releasing.md`.
 
 Update `.agent/current-state.md` and `.agent/next-task.md` only when the project
 capability, current gate, or assigned next task changes. At handoff report what

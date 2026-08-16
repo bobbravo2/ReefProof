@@ -6,6 +6,8 @@ from pathlib import Path
 
 WORKFLOW = Path(".github/workflows/release.yml")
 SYNC_WORKFLOW = Path(".github/workflows/sync-release-notes.yml")
+RUNBOOK = Path("docs/releasing.md")
+TEMPLATE = Path("docs/releases/TEMPLATE.md")
 
 
 def test_release_quality_and_scan_gate_precede_publication() -> None:
@@ -90,6 +92,32 @@ def test_release_requires_human_notes_and_appends_technical_evidence() -> None:
         assert "## What changed" in notes
         assert "## Changelog" in notes
         assert "## Safety boundary" in notes
+
+
+def test_release_process_is_discoverable_and_complete_for_future_agents() -> None:
+    runbook = RUNBOOK.read_text(encoding="utf-8")
+    template = TEMPLATE.read_text(encoding="utf-8")
+    agent_guide = Path("AGENTS.md").read_text(encoding="utf-8")
+    contributing = Path("CONTRIBUTING.md").read_text(encoding="utf-8")
+    checklist = Path("docs/open-source-release-checklist.md").read_text(encoding="utf-8")
+
+    assert "docs/releasing.md" in agent_guide
+    assert "docs/releases/vX.Y.Z.md" in contributing
+    assert "release and release-notes runbook" in checklist
+    for required in (
+        "explicit human authority",
+        "local-check",
+        "local-bundle",
+        "verify-release-tag.py",
+        "git tag -a vX.Y.Z",
+        ".github/workflows/release.yml",
+        ".github/workflows/sync-release-notes.yml",
+        "immutable image digest",
+        "NOT TESTED",
+    ):
+        assert required in runbook
+    for heading in ("## What changed", "## Who should upgrade", "## Changelog"):
+        assert heading in template
 
 
 def test_release_tag_verifier_accepts_only_the_package_version() -> None:

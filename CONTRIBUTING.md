@@ -34,8 +34,14 @@ Before adding or changing an HTTP operation:
 
 The browser Workbench bundle is generated from
 `src/reefproof/api/web/typescript/workbench.ts`. Do not edit
-`src/reefproof/api/web/static/workbench.js` directly. Keep the generated file
-untracked and rebuild it with `npm run build` or development-mode serve reloads.
+`src/reefproof/api/web/static/workbench.js` directly. The generated bundle is a
+tracked release input; rebuild it with `npm run build` and commit it with its
+TypeScript source so clean release staging cannot omit the browser application.
+
+For version bumps, tags, GHCR publication, or corrections to an existing GitHub
+Release, follow [the release and release-notes runbook](docs/releasing.md). Every
+tag requires `docs/releases/vX.Y.Z.md`; generated technical evidence supplements
+human notes and never replaces the summary, upgrade guidance, or changelog.
 
 Use the one-writer and optional read-only reviewer workflow in
 `docs/player-coach-loop.md`. The superseded coach protocol is historical only

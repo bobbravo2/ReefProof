@@ -204,6 +204,10 @@ and the registry-reported digest. It creates a GitHub Release whose receipt and
 attached supply-chain evidence expose that digest through the repository UI.
 No local build proves publication or hosted attestation success.
 
+Follow [the release and release-notes runbook](releasing.md) for candidate
+isolation, versioning, human notes, tag publication, live release acceptance,
+and corrections to an existing GitHub Release.
+
 ## Electron desktop
 
 Development prerequisites include Node.js 22.12 or newer, locked npm

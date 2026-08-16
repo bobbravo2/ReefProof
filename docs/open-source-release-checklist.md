@@ -4,6 +4,9 @@ This checklist defines when ReefProof may be made public. It supplements the
 product and artifact requirements in `docs/release-criteria.md`; it does not
 replace target-LXC or packaged-desktop acceptance.
 
+Use [the release and release-notes runbook](releasing.md) for the exact candidate,
+tag, publication, hosted verification, and existing-release correction process.
+
 ## Repository boundary
 
 - The public repository uses `https://github.com/bobbravo2/ReefProof` and the
@@ -49,6 +52,9 @@ aquarium or acceptance decisions are not permitted.
   or the release remains a candidate and is not tagged or published.
 - The candidate is reviewed for dependency licenses, vulnerability findings,
   generated-contract parity, and immutable workflow action pins.
+- `docs/releases/vX.Y.Z.md` contains operator-facing impact, upgrade guidance,
+  changelog, known issues, and the safety boundary. The generated receipt is
+  technical evidence and does not substitute for human release notes.
 
 Publishing, pushing a rewritten history, creating `v0.1.0`, or uploading any
 artifact remains an explicit release action. Local readiness checks do not
