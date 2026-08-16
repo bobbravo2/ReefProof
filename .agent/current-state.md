@@ -1,67 +1,74 @@
 # Current State
 
-Last updated: 2026-08-08
+Last updated: 2026-08-16
 
 ## Current gate
 
-The v0.1 release candidate requires both the first offline electrical-assurance
-slice and the dual-mode hosted deployment contract. Secret-bearing input must
-remain protected. The exact immutable OCI artifact must run on the private-LAN
-target LXC, and the packaged desktop must pass `local-managed` and
-`remote-hosted` acceptance without mixing process, storage, or authority.
+ReefProof v0.1.1 is the current released baseline. The next product gate is v0.1.2: a modular Workbench plus one complete live Google Sheets commissioning and bulk-label vertical slice for the Primary Reef System.
+
+The accepted v0.1.2 plan is:
+
+`docs/plans/2026-08-16-v0.1.2-modular-workbench-sheets-commissioning-labels.md`
+
+The gate is no longer satisfied by frontend modularization alone. v0.1.2 must prove:
+
+`Google Sheets -> authored import -> human acceptance -> canonical ReefProof state -> authored/observed reconciliation -> commissioning -> deterministic label CSV`
+
+HYDROS remains runtime authority. ReefProof remains structurally read-only toward HYDROS and Google Sheets.
+
+## Released baseline
+
+- v0.1.1 was published on 2026-08-15 as the supported hotfix for the v0.1.0 Workbench bundle omission.
+- The v0.1.1 OCI release restores the browser Workbench bundle and preserves the existing database schema.
+- The current package version is `0.1.1`.
+- Existing local-managed and remote-hosted desktop/runtime boundaries, versioned APIs, authentication/session behavior, SQLite backup/replay behavior, and no-control HYDROS boundary remain compatibility requirements for v0.1.2.
 
 ## Current capability
 
-- Offline fixtures and the private export normalize into deterministic evidence.
-- Typed reliability graphs and fifteen invariants preserve `PASS`, `FAIL`, and
-  `UNKNOWN` with explanations and provenance.
-- SQLite stores configuration snapshots, evaluation runs/results, finding transitions,
-  return-flow policy revisions,
-  authority chains, and schema migrations.
-- The pre-release migration chain is consolidated into one fresh-install v0.1
-  schema contract. Old development databases are intentionally unsupported;
-  normalized source exports remain the rebuild boundary.
-- The local CLI, loopback Workbench, OCI image, and unsigned macOS Electron shell
-  exist without live HYDROS access, MQTT publication, controller mutation, or
-  automatic remediation.
-- All non-presentation APIs are versioned under `/v1`; the canonical system
-  surface includes correlated status, health, metrics, findings, local OpenAPI,
-  and a self-contained read-only API reference.
-- ADR 0008 is accepted. Its exhaustive route, authentication, authorization,
-  audit, and success-status matrix is enforced by the Python integration suite.
-- Dual-mode desktop, authenticated hosted operations, immutable API mutation audit,
-  opaque single-use backup download, bounded staging retention, and narrow
-  supervisor-owned restart are implemented locally. Packaged dual-mode and
-  target-LXC acceptance remain required release evidence.
+- Offline HYDROS fixtures and operator-supplied exports normalize into deterministic evidence.
+- Typed reliability graphs and fifteen invariants preserve `PASS`, `FAIL`, and `UNKNOWN` with explanations and provenance.
+- SQLite stores configuration snapshots, evaluation runs/results, finding transitions, return-flow policy revisions, authority chains, trust events, and schema migrations.
+- The local CLI, loopback Workbench, OCI image, and macOS Electron shell exist without live HYDROS access, MQTT publication, controller mutation, or automatic remediation.
+- All non-presentation APIs are versioned under `/v1` and generated OpenAPI contracts feed the TypeScript frontend.
+- The current Workbench remains structurally monolithic: one conditional Jinja template plus one large TypeScript controller initialize Overview, Assurance, Evidence, System Map, Sessions, Database, session/auth, trust, electrical posture, and project surfaces.
+- The current real-system electrical posture can expose imported HYDROS evidence and unproven authored domains, but the Workbench does not yet provide live Google Sheets authored import, electrical mapping authoring/review, commissioning workflow, or label generation.
+- Canonical project acceptance currently supports append-only candidate -> human decision -> domain event replay, but candidate domain validation is still narrow and must be extended for authored system imports.
+- The current physical proposal model is still the fixed Mock Collective return-flow model and must not become the permanent canonical physical-system model.
 
-## Current evidence
+## Accepted v0.1.2 product decisions
 
-- The accepted `RP-UNIT-001` result confirms the observed HYDROS `tempFmt` value
-  `"1"` means expected Fahrenheit; other vendor semantics remain unknown.
-- The last committed local quality and artifact gates passed before the current
-  dual-mode implementation began. They must be rerun after that slice is
-  complete; prior timings and test counts are not current release evidence.
-- The database and interface contracts have local Python, browser, and desktop
-  coverage plus generated-contract parity. The current shared-tree Python run
-  is not green while the concurrent session-dependency work is being reconciled,
-  and its 15-second wall-clock service budget remains unmet. The final canonical
-  quality gate, clean-tree bundle, packaged desktop, and target-LXC acceptance
-  remain required.
-- No v0.1 release candidate has been accepted, pushed, tagged, published, or
-  deployed.
+- Google Sheets is the live authored-system interface; ReefProof must not recreate a generic spreadsheet UI.
+- Exactly these tabs are in the first live import contract: `BOM`, `DOMAINS`, `POWER`, `DEVICE_INTERFACES`, `OUTPUTS`, `MODES`.
+- Trust flows from Sheet source evidence into ReefProof only through explicit review and human acceptance; sync never silently overwrites canonical state.
+- Previously accepted/proven ReefProof life-support state remains usable when the Sheet is stale, unavailable, or later changed.
+- Stable Sheet identifiers remain namespaced external identities; ReefProof owns source-independent namespace-qualified canonical identities.
+- Commissioning is evidence-backed and ReefProof-owned. A Sheet lifecycle cell is an authored claim, not commissioning authority.
+- A commissioned device has inventoried identity and electrical connections, dispositioned failure modes, complete labels, verified power/comms where applicable, and accepted fault-test evidence for every applicable controllable surface.
+- Canonical initial label vocabulary is `DEVICE`, `PORT`, `CABLE`, `POWER SUPPLY`.
+- Every removable connection is labeled at both ends using `FROM / TO / CABLE`, consistently across power, control, sensor, and data cabling.
+- Endpoint completeness is a commissioning invariant: no removable cable is commissioned until both labels are physically verified and mutually traceable.
+- ReefProof owns deterministic CSV export for Brother P-touch bulk printing; direct printer control and generic label design are out of scope.
 
-## Blocking unknowns
+## Known source-schema issue to handle explicitly
 
-- Safe allowlisted Tuya fields required for topology.
-- Physical-port relationships and authored circuit, protection, backup-power,
-  and load mappings.
-- Accepted `lowPower` and `maxOnTime` semantics.
-- Packaged acceptance in both exact desktop modes.
-- Immutable-image target-LXC persistence and restart acceptance.
+The current production workbook contains duplicated `POWER_DOMAIN_ID` headers in `DEVICE_INTERFACES`. The v0.1.2 Sheet adapter must report this as an explicit schema diagnostic unless an accepted source mapping disambiguates it. Silent first-column/last-column selection is forbidden.
+
+## Immediate implementation focus
+
+- Reconcile ownership of current dirty frontend/build hunks and capture a fresh exact test baseline.
+- Add exact-pinned esbuild and Playwright Test while preserving the single `/assets/workbench.js` artifact.
+- Replace selector-discovered frontend initialization with explicit server-authored page mounts and narrow shared seams.
+- Add deterministic browser fixtures for source/import/commissioning/labels before those pages are implemented.
+- Add the backend `AuthoredSystemSource` provider boundary and a read-only server-side Google Sheets source implementation.
+- Build strict six-tab normalization, source provenance, source freshness, import-batch persistence, semantic diffs, identity bindings, and deterministic candidate validation.
+
+## Blocking unknowns / implementation decisions intentionally deferred behind replaceable seams
+
+- Exact Google credential mechanism for local-managed versus remote-hosted deployment. It must remain server-side, read-only, replaceable, and absent from evidence/backups/browser state.
+- The final canonical instance slugs for all physical devices/ports/cables. The canonical ID grammar is accepted; individual instance creation remains explicit rather than inferred from BOM quantity.
+- Exact safe fault-injection procedure per control surface. v0.1.2 must model required evidence without forcing unsafe destructive tests.
+- Exact P-touch column/template mapping after validating the deterministic ReefProof CSV against the current Brother bulk-print workflow.
 
 ## History
 
-The previous cumulative implementation and verification ledger is archived at
-`docs/archive/current-state-2026-08-01.md`. Dated plans, ADRs, and Git history
-remain authoritative for completed work; this file contains only context needed
-for the current gate and handoff.
+v0.1.0 was the first public release but omitted the Workbench JavaScript bundle in the published container. v0.1.1 superseded it and is the supported released baseline. Dated plans, ADRs, release notes, and Git history remain authoritative for completed work; this file contains only context needed for the current gate and agent handoff.
