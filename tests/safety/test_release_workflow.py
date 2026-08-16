@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 WORKFLOW = Path(".github/workflows/release.yml")
+SYNC_WORKFLOW = Path(".github/workflows/sync-release-notes.yml")
 
 
 def test_release_quality_and_scan_gate_precede_publication() -> None:
@@ -63,6 +64,21 @@ def test_release_quality_gate_requires_tag_to_match_package_version() -> None:
 
     assert quality < tag_check < publish
     assert 'scripts/verify-release-tag.py "$GITHUB_REF_NAME"' in workflow[tag_check:publish]
+
+
+def test_release_requires_human_notes_and_appends_technical_evidence() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    sync_workflow = SYNC_WORKFLOW.read_text(encoding="utf-8")
+
+    assert 'notes_path="docs/releases/${GITHUB_REF_NAME}.md"' in workflow
+    assert "grep -Fq '## What changed'" in workflow
+    assert "grep -Fq '## Changelog'" in workflow
+    assert 'cp "docs/releases/${GITHUB_REF_NAME}.md" reefproof-release-body.md' in workflow
+    assert "cat reefproof-release.md >> reefproof-release-body.md" in workflow
+    assert "--notes-file reefproof-release-body.md" in workflow
+    assert 'paths: ["docs/releases/v*.md"]' in sync_workflow
+    assert "gh release download" in sync_workflow
+    assert "gh release edit" in sync_workflow
 
 
 def test_release_tag_verifier_accepts_only_the_package_version() -> None:

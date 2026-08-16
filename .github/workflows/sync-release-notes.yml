@@ -1,0 +1,42 @@
+name: sync human release notes
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/releases/v*.md"]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: update published release notes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Combine human notes with immutable release evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for notes_path in docs/releases/v*.md; do
+            tag="$(basename "$notes_path" .md)"
+            [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+            if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              continue
+            fi
+            evidence_directory="$RUNNER_TEMP/$tag-evidence"
+            release_body="$RUNNER_TEMP/$tag-release-notes.md"
+            mkdir -p "$evidence_directory"
+            gh release download "$tag" \
+              --repo "$GITHUB_REPOSITORY" \
+              --pattern reefproof-release.md \
+              --dir "$evidence_directory" \
+              --clobber
+            cp "$notes_path" "$release_body"
+            printf '\n' >> "$release_body"
+            cat "$evidence_directory/reefproof-release.md" >> "$release_body"
+            gh release edit "$tag" \
+              --repo "$GITHUB_REPOSITORY" \
+              --notes-file "$release_body"
+          done

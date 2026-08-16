@@ -28,6 +28,12 @@ jobs:
       - run: ./scripts/bootstrap.sh
       - name: Verify release tag matches package version
         run: uv run python scripts/verify-release-tag.py "$GITHUB_REF_NAME"
+      - name: Verify human release notes
+        run: |
+          notes_path="docs/releases/${GITHUB_REF_NAME}.md"
+          test -s "$notes_path"
+          grep -Fq '## What changed' "$notes_path"
+          grep -Fq '## Changelog' "$notes_path"
       - run: make check
 
   publish:
@@ -128,8 +134,7 @@ jobs:
         run: |
           receipt="reefproof-release.md"
           {
-            printf '## ReefProof %s\n\n' "$GITHUB_REF_NAME"
-            printf '%s\n\n' 'Read-only configuration assurance for living systems.'
+            printf '%s\n\n' '## Technical release evidence'
             printf '%s\n' '| Release evidence | Verified reference |'
             printf '%s\n' '| --- | --- |'
             # GitHub Actions resolves this expression before the shell runs.
@@ -143,6 +148,11 @@ jobs:
             printf '%s\n' 'Deploy the immutable OCI digest above; tags are for discovery only.'
           } > "$receipt"
           cat "$receipt" >> "$GITHUB_STEP_SUMMARY"
+      - name: Combine human release notes with technical evidence
+        run: |
+          cp "docs/releases/${GITHUB_REF_NAME}.md" reefproof-release-body.md
+          printf '\n' >> reefproof-release-body.md
+          cat reefproof-release.md >> reefproof-release-body.md
       - name: Create GitHub release with supply-chain evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -154,5 +164,5 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --verify-tag \
             --title "ReefProof $GITHUB_REF_NAME" \
-            --notes-file reefproof-release.md \
+            --notes-file reefproof-release-body.md \
             --latest

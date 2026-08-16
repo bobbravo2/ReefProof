@@ -68,6 +68,11 @@ test("tag publication creates a GitHub release with immutable deployment evidenc
     /reefproof\.vulnerabilities\.json#reefproof\.vulnerabilities\.json/,
   );
   assert.match(releaseWorkflow, /--verify-tag/);
-  assert.match(releaseWorkflow, /--notes-file reefproof-release\.md/);
+  assert.match(releaseWorkflow, /--notes-file reefproof-release-body\.md/);
+  assert.match(
+    releaseWorkflow,
+    /docs\/releases\/\$\{GITHUB_REF_NAME\}\.md/,
+  );
+  assert.match(releaseWorkflow, /## Technical release evidence/);
   assert.match(releaseWorkflow, /Deploy the immutable OCI digest above/);
 });
