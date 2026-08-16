@@ -76,8 +76,11 @@ def test_release_requires_human_notes_and_appends_technical_evidence() -> None:
     assert 'cp "docs/releases/${GITHUB_REF_NAME}.md" reefproof-release-body.md' in workflow
     assert "cat reefproof-release.md >> reefproof-release-body.md" in workflow
     assert "--notes-file reefproof-release-body.md" in workflow
-    assert 'paths: ["docs/releases/v*.md"]' in sync_workflow
+    assert '".github/workflows/sync-release-notes.yml"' in sync_workflow
+    assert '"docs/releases/v*.md"' in sync_workflow
     assert "gh release download" in sync_workflow
+    assert "## Technical release evidence" in sync_workflow
+    assert "/^\\| Release evidence \\|/" in sync_workflow
     assert "gh release edit" in sync_workflow
 
 

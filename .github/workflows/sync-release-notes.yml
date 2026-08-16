@@ -3,7 +3,9 @@ name: sync human release notes
 on:
   push:
     branches: [main]
-    paths: ["docs/releases/v*.md"]
+    paths:
+      - ".github/workflows/sync-release-notes.yml"
+      - "docs/releases/v*.md"
 
 permissions:
   contents: write
@@ -34,8 +36,11 @@ jobs:
               --dir "$evidence_directory" \
               --clobber
             cp "$notes_path" "$release_body"
-            printf '\n' >> "$release_body"
-            cat "$evidence_directory/reefproof-release.md" >> "$release_body"
+            printf '\n## Technical release evidence\n\n' >> "$release_body"
+            awk '
+              /^\| Release evidence \|/ { evidence = 1 }
+              evidence { print }
+            ' "$evidence_directory/reefproof-release.md" >> "$release_body"
             gh release edit "$tag" \
               --repo "$GITHUB_REPOSITORY" \
               --notes-file "$release_body"
