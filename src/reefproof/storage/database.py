@@ -26,9 +26,9 @@ from reefproof.rules import (
     preview_flow,
 )
 
-DATABASE_SCHEMA_VERSION = 1
-DATABASE_ALEMBIC_REVISION = "0001"
-V01_SCHEMA_TABLES = frozenset(
+DATABASE_SCHEMA_VERSION = 6
+DATABASE_ALEMBIC_REVISION = "0006"
+_V01_SCHEMA_TABLES = frozenset(
     {
         "active_findings",
         "alert_attempts",
@@ -48,6 +48,34 @@ V01_SCHEMA_TABLES = frozenset(
         "return_flow_policy_revisions",
     }
 )
+V01_SCHEMA_TABLES = _V01_SCHEMA_TABLES | {
+    "authored_source_configurations",
+    "authored_source_snapshots",
+    "authored_import_batches",
+    "authored_source_fetch_attempts",
+    "external_identity_bindings",
+    "commissioning_verifications",
+    "failure_mode_dispositions",
+}
+_SCHEMA_TABLES_BY_REVISION = {
+    "0001": _V01_SCHEMA_TABLES,
+    "0002": V01_SCHEMA_TABLES
+    - {
+        "external_identity_bindings",
+        "commissioning_verifications",
+        "failure_mode_dispositions",
+        "authored_source_fetch_attempts",
+    },
+    "0003": V01_SCHEMA_TABLES
+    - {
+        "commissioning_verifications",
+        "failure_mode_dispositions",
+        "authored_source_fetch_attempts",
+    },
+    "0004": V01_SCHEMA_TABLES - {"authored_source_fetch_attempts"},
+    "0005": V01_SCHEMA_TABLES,
+    DATABASE_ALEMBIC_REVISION: V01_SCHEMA_TABLES,
+}
 _FRESH_SCHEMA_LOCK = Lock()
 _FRESH_SCHEMA_IMAGE: bytes | None = None
 
@@ -165,9 +193,23 @@ class Database:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         if not initialized:
             self._initialize_fresh_schema(revision)
-        self._assert_compatible_schema(require_v01=True)
+        elif self.schema_version() != DATABASE_SCHEMA_VERSION:
+            self._upgrade_existing_schema(revision)
+        self._assert_compatible_schema(require_head=True)
         with self._connection():
             pass
+
+    def _upgrade_existing_schema(self, revision: str) -> None:
+        configuration = Config()
+        configuration.set_main_option(
+            "script_location",
+            str(Path(__file__).parent / "migrations"),
+        )
+        configuration.set_main_option(
+            "sqlalchemy.url",
+            f"sqlite:///{self.path.resolve().as_posix()}",
+        )
+        command.upgrade(configuration, revision)
 
     def _initialize_fresh_schema(self, revision: str) -> None:
         """Create the canonical empty schema once, then clone that immutable image."""
@@ -197,11 +239,11 @@ class Database:
                 source.deserialize(_FRESH_SCHEMA_IMAGE)
                 source.backup(target)
 
-    def _assert_compatible_schema(self, *, require_v01: bool = False) -> bool:
+    def _assert_compatible_schema(self, *, require_head: bool = False) -> bool:
         """Reject incompatible existing files without modifying their bytes."""
 
         if not self.path.exists():
-            if require_v01:
+            if require_head:
                 raise ValueError("fresh v0.1 database initialization did not create a database")
             return False
         try:
@@ -213,7 +255,7 @@ class Database:
                         "WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
                     ).fetchall()
                 }
-                if not tables and not require_v01:
+                if not tables and not require_head:
                     return False
                 if "alembic_version" not in tables:
                     revision = None
@@ -225,9 +267,15 @@ class Database:
                 "incompatible ReefProof database; preserve or move the existing file aside "
                 "and start with a new path"
             ) from error
-        if revision != DATABASE_ALEMBIC_REVISION or tables != V01_SCHEMA_TABLES:
+        expected_tables = _SCHEMA_TABLES_BY_REVISION.get(revision or "")
+        if (
+            expected_tables is None
+            or tables != expected_tables
+            or (require_head and revision != DATABASE_ALEMBIC_REVISION)
+        ):
             raise ValueError(
-                "incompatible ReefProof database; expected fresh v0.1 schema revision 0001. "
+                f"incompatible ReefProof database; expected supported schema through "
+                f"revision {DATABASE_ALEMBIC_REVISION}. "
                 "The existing file was not modified. Preserve or move it aside and start "
                 "ReefProof with a new database path."
             )

@@ -28,6 +28,10 @@ from reefproof.alerting import (
 from reefproof.alerting.protocol import AlertAdapter
 from reefproof.api import create_app
 from reefproof.api.operations import LocalHostedOperations
+from reefproof.authored_sources import (
+    GoogleServiceAccountCredentialProvider,
+    GoogleSheetsSource,
+)
 from reefproof.project_state import Project
 from reefproof.project_store import ProjectStore
 from reefproof.service.pipeline import FixtureEvaluationPipeline
@@ -133,6 +137,20 @@ def build_runtime(
         f"{bootstrap_secret}",
         flush=True,
     )
+    google_source_settings = settings.authored_sources.google_sheets
+    authored_source = (
+        GoogleSheetsSource(
+            spreadsheet_id=google_source_settings.spreadsheet_id,
+            source_alias=google_source_settings.source_alias,
+            credentials=GoogleServiceAccountCredentialProvider(
+                google_source_settings.credential_file
+            ),
+        )
+        if google_source_settings.enabled
+        and google_source_settings.spreadsheet_id is not None
+        and google_source_settings.credential_file is not None
+        else None
+    )
     app = create_app(
         runtime_state=state.snapshot,
         database=database,
@@ -141,6 +159,9 @@ def build_runtime(
         acceptance_principal_display_name=settings.project.acceptance_authority_display_name,
         project_store=project_store,
         active_project_id=active_project.project_id,
+        active_project_name=active_project.name,
+        authored_source=authored_source,
+        authored_source_freshness_seconds=google_source_settings.freshness_seconds,
         session_https_only=settings.api.session_https_only,
         hosted_operations=LocalHostedOperations(
             database=database,

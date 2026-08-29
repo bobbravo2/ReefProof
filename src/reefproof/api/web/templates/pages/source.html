@@ -1,0 +1,47 @@
+<header class="page-hero">
+  <div>
+    <p class="eyebrow">Authored source evidence</p>
+    <h1>Source and imports</h1>
+    <p class="page-hero__summary">
+      Review read-only Google Sheets evidence before it can become canonical ReefProof state.
+    </p>
+  </div>
+  <div class="provenance-card">
+    <span class="status-dot" aria-hidden="true"></span>
+    <div><strong>READ ONLY</strong><span>No Sheet write-back</span></div>
+  </div>
+</header>
+<section class="panel panel--full" aria-labelledby="source-status-heading">
+  <div class="section-heading">
+    <div><p class="eyebrow">Google Sheets source</p><h2 id="source-status-heading">Source status</h2></div>
+    <span id="source-health" class="count-badge">UNKNOWN</span>
+  </div>
+  <p id="source-status" class="section-intro" role="status">Loading source evidence.</p>
+  <button id="source-sync" type="button">Fetch read-only source now</button>
+  <dl class="evidence-list">
+    <div><dt>Workbook</dt><dd id="source-workbook">Not configured</dd></div>
+    <div><dt>Latest fetch</dt><dd id="source-fetched-at">Never</dd></div>
+    <div><dt>Snapshot</dt><dd id="source-snapshot-hash">None</dd></div>
+  </dl>
+</section>
+<section class="panel panel--full" aria-labelledby="imports-heading">
+  <div class="section-heading">
+    <div><p class="eyebrow">Human acceptance boundary</p><h2 id="imports-heading">Import batches</h2></div>
+  </div>
+  <div id="source-imports" class="stack-list"></div>
+  <article id="source-review" class="panel" hidden>
+    <h3>Grouped semantic review</h3>
+    <p id="source-review-summary"></p>
+    <div id="source-review-objects" class="stack-list"></div>
+    <form id="source-review-form">
+      <input type="hidden" name="import_batch_id">
+      <label>Decision
+        <select name="decision"><option value="ACCEPTED">Accept batch</option><option value="REJECTED">Reject batch</option></select>
+      </label>
+      <label>Rationale <input name="rationale" required></label>
+      <label>Authenticator code <input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
+      <button type="submit">Record reviewed batch</button>
+    </form>
+    <p id="source-review-status" role="status"></p>
+  </article>
+</section>

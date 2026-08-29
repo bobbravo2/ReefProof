@@ -83,7 +83,7 @@ run_read_only=(
     trap "kill $reefproof_server_pid 2>/dev/null || true" EXIT
     for attempt in 1 2 3 4 5 6 7 8 9 10; do
       if wget -q -O /tmp/workbench.js http://127.0.0.1:18787/assets/workbench.js; then
-        grep -Fq "const API_ROOT" /tmp/workbench.js
+        grep -Fq "ReefProof Workbench bundle" /tmp/workbench.js
         exit 0
       fi
       sleep 1

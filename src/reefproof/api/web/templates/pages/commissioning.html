@@ -1,0 +1,30 @@
+<header class="page-hero"><div><p class="eyebrow">Evidence-backed installation</p><h1>Commissioning</h1><p class="page-hero__summary">Missing proof remains UNKNOWN and blocks commissioning.</p></div></header>
+<section class="panel panel--full"><p id="commissioning-status" role="status">Commissioning evidence model is loading.</p><div id="commissioning-devices" class="stack-list"></div></section>
+<section class="panel panel--full" aria-labelledby="verification-heading">
+  <h2 id="verification-heading">Record bounded verification</h2>
+  <form id="commissioning-verification-form">
+    <label>Canonical device ID <input name="device_id" required></label>
+    <label>Check <select name="kind"><option>CONNECTION</option><option>POWER</option><option>COMMUNICATIONS</option><option>FAULT_TEST</option></select></label>
+    <label>Outcome <select name="outcome"><option>PASS</option><option>FAIL</option><option>NOT_APPLICABLE</option></select></label>
+    <label>Canonical connection ID, for connection verification <input name="connection_id"></label>
+    <label>Control surface, for fault test <input name="control_surface_id"></label>
+    <label>Evidence reference <input name="evidence_reference" required></label>
+    <label>Rationale <input name="rationale" required></label>
+    <label>Authenticator code <input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
+    <button type="submit">Record verification</button>
+  </form>
+  <p id="commissioning-action-status" role="status"></p>
+</section>
+<section class="panel panel--full" aria-labelledby="disposition-heading">
+  <h2 id="disposition-heading">Disposition a failure mode</h2>
+  <form id="failure-mode-form">
+    <label>Canonical device ID <input name="device_id" required></label>
+    <label>Failure mode <select name="failure_mode_id"><option>power_loss</option><option>control_link_loss</option><option>leak_or_flow_loss</option></select></label>
+    <label>Disposition <select name="disposition"><option>ALERTED_DETECTED</option><option>ACCEPTED_RISK</option><option>AUTOMATED_MITIGATION</option></select></label>
+    <label>Evidence reference <input name="evidence_reference" required></label>
+    <label>Rationale <input name="rationale" required></label>
+    <label>Authenticator code <input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
+    <button type="submit">Record disposition</button>
+  </form>
+  <p id="failure-mode-status" role="status"></p>
+</section>

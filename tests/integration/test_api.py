@@ -35,6 +35,10 @@ PRESENTATION_ROUTES = {
     "/favicon.ico",
     "/workbench",
     "/workbench/system-map",
+    "/workbench/source",
+    "/workbench/imports",
+    "/workbench/commissioning",
+    "/workbench/labels",
     "/workbench/assurance",
     "/workbench/evidence",
     "/workbench/sessions",
@@ -348,30 +352,36 @@ def test_openapi_describes_auth_and_groups_only_api_operations(tmp_path: Path) -
         assert contract.success_status in operation.get("responses", {})
 
 
-def test_workbench_is_backend_authored_external_and_conspicuously_manual(
+def test_workbench_injects_project_identity_and_keeps_manual_tools_explicit(
     tmp_path: Path,
 ) -> None:
     app = create_app(
         runtime_state=lambda: _state(),
         database=_database(tmp_path / "reefproof.sqlite3"),
         now=lambda: NOW,
+        active_project_name="Primary Reef Fixture",
     )
 
     page = _get(app, "/workbench")
     assert page.status_code == 200
-    assert "Mock Collective" in page.text
-    assert "MANUAL / NOT LIVE" in page.text
+    assert "<title>Overview · Primary Reef Fixture · ReefProof</title>" in page.text
+    assert "Primary Reef Fixture" in page.text
+    assert "Mock Collective" not in page.text
+    assert "READ ONLY" in page.text
     assert '<script type="module" src="/assets/workbench.js?v=' in page.text
     assert '<form id="startup-session-form" class="session-auth-form" method="post">' in page.text
     assert 'aria-label="Main navigation"' in page.text
-    assert "Manual return-flow check" in page.text
-    assert "Author one bounded return-flow policy" in page.text
-    assert "Operator-export import and electrical mapping authoring are not available" in page.text
+    assert "Primary workflow" in page.text
+    assert "Author, verify, and export" in page.text
+    assert "No equipment control" in page.text
     assert '<link rel="icon" href="/assets/favicon.svg?v=' in page.text
     assert '<link rel="alternate icon" href="/favicon.ico?v=' in page.text
     assert "<script>" not in page.text
     assert 'href="/workbench/assurance"' in page.text
     assert 'href="/workbench/evidence"' in page.text
+    assert 'href="/workbench/source"' in page.text
+    assert 'href="/workbench/commissioning"' in page.text
+    assert 'href="/workbench/labels"' in page.text
 
     assurance = _get(app, "/workbench/assurance")
     assert assurance.text.count("MANUAL / NOT LIVE") >= 2
@@ -383,11 +393,10 @@ def test_workbench_is_backend_authored_external_and_conspicuously_manual(
     assert 'id="rule-catalog"' in evidence.text
 
     system_map = _get(app, "/workbench/system-map")
-    assert 'id="physical-twin"' in system_map.text
-    assert 'viewBox="0 0 660 460"' in system_map.text
-    assert 'id="physical-relationships"' in system_map.text
-    assert 'id="physical-entities"' in system_map.text
-    assert 'id="mock-findings"' in system_map.text
+    assert 'id="reconciliation-status"' in system_map.text
+    assert 'id="reconciliation-items"' in system_map.text
+    assert "never guesses by name or topology" in system_map.text
+    assert 'id="physical-twin"' not in system_map.text
     stylesheet = _get(app, "/assets/workbench.css").text
     assert "@media (max-width: 36rem)" in stylesheet
     assert ".input-shell input:focus-visible" in stylesheet
@@ -410,7 +419,8 @@ def test_workbench_is_backend_authored_external_and_conspicuously_manual(
     assert logo.headers["content-type"] == "image/png"
     assert logo.content.startswith(b"\x89PNG\r\n\x1a\n")
     browser = _get(app, "/assets/workbench.js").text
-    assert 'const API_ROOT = "/v1/workbench"' in browser
+    assert "ReefProof Workbench bundle" in browser
+    assert 'API_ROOT = "/v1/workbench"' in browser
     assert '"/api/workbench' not in browser
 
     template = _get(app, "/v1/workbench/policy-template").json()

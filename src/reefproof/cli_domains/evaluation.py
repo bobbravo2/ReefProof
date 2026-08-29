@@ -30,6 +30,10 @@ def register(app: typer.Typer) -> None:
             str,
             typer.Option(help="Timezone-aware Download Config capture time."),
         ],
+        output_format: Annotated[
+            Literal["text", "json"],
+            typer.Option("--format", help="Evaluation output format."),
+        ] = "text",
         expected_temperature_unit: Annotated[
             Literal["fahrenheit"],
             typer.Option(help="Operator-confirmed expected HYDROS display unit."),
@@ -55,6 +59,23 @@ def register(app: typer.Typer) -> None:
             raise typer.BadParameter(str(error), param_hint="--hydros-export") from error
 
         result = completed.evaluation.results[0]
+        if output_format == "json":
+            typer.echo(
+                json.dumps(
+                    {
+                        "detailed_explanation": result.detailed_explanation,
+                        "evidence": list(result.evidence),
+                        "invariant_id": result.invariant_id,
+                        "severity": result.severity.value,
+                        "snapshot_hash": completed.snapshot.snapshot_hash,
+                        "state": result.state.value,
+                        "summary": result.summary,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return
         typer.echo(
             f"{result.state.value} {result.severity.value.upper()} "
             f"{result.invariant_id} — {result.summary}"

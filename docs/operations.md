@@ -53,6 +53,48 @@ For an emergency filesystem copy, stop every ReefProof process and copy the
 main database, `-wal`, and `-shm` files as one set whenever sidecars exist.
 Never copy only the main file from a live database.
 
+## First authored-source label batch
+
+Configure `authored_sources.google_sheets` in the strict YAML configuration.
+The credential file stays outside the repository and SQLite evidence. ReefProof
+uses only the Google Sheets read-only scope and fetches exactly `BOM`,
+`DOMAINS`, `POWER`, `DEVICE_INTERFACES`, `OUTPUTS`, and `MODES`.
+
+```bash
+reefproof source validate
+reefproof source load
+reefproof source review SESSION_ID
+reefproof source accept SESSION_ID --totp-code 123456 --rationale "Reviewed authored batch"
+reefproof labels export
+```
+
+`validate` does not create a database. `load` records immutable source/import
+evidence and noncanonical candidates only. `review` renders the persisted
+object-level semantic diff and exact source ranges without mutation. `accept` requires a fresh,
+non-replayable authenticator code and atomically applies deterministic candidate
+validation before canonical events are written. CSV export defaults to
+`reefproof-<project-name>-v<version>-labels.csv` in the current directory, is
+derived from accepted state, refuses to overwrite a file, and never controls a printer.
+Authenticated clients may also download the same projection from
+`/v1/projects/{project_id}/labels.csv`; its filename includes the project name
+and ReefProof version.
+
+The same workflow is available after Workbench authentication:
+
+1. Open `/workbench/source`, fetch the read-only source, inspect the grouped
+   semantic changes and exact tab/row provenance, then accept or reject the
+   batch with a fresh authenticator code.
+2. Open `/workbench/commissioning`. Record bounded power, communications, and
+   fault-test evidence plus every applicable failure-mode disposition. Missing
+   proof remains `UNKNOWN`; contradictory evidence is `BLOCKED`.
+3. Open `/workbench/labels`, preview the deterministic label manifest, export
+   the versioned project-named CSV, and record physical application evidence.
+   Cable `FROM` and `TO` endpoints require separate verification.
+
+Google unavailability never removes accepted project state. The Source page
+reports it independently as `UNAVAILABLE` and retains the last successful
+snapshot/import for review and commissioning.
+
 ## Local Workbench
 
 ```bash

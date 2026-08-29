@@ -137,6 +137,6 @@ def test_release_tag_verifier_accepts_only_the_package_version() -> None:
     )
 
     assert matching.returncode == 0
-    assert "PASS: release tag v0.1.1 matches package version 0.1.1" in matching.stdout
+    assert "PASS: release tag v0.1.2 matches package version 0.1.2" in matching.stdout
     assert mismatching.returncode == 2
     assert "does not match package version" in mismatching.stderr

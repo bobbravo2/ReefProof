@@ -1,0 +1,19 @@
+<header class="page-hero">
+  <div><p class="eyebrow">Assurance</p><h1>Author the return-flow policy</h1><p class="page-hero__summary">Enter bounded manual evidence. ReefProof calculates and stores an immutable policy revision; it cannot change HYDROS.</p></div>
+  <div class="provenance-card"><span class="status-dot" aria-hidden="true"></span><div><strong>MANUAL / NOT LIVE</strong><span>Local authored evidence</span></div></div>
+</header>
+
+<div id="loading-status" class="notice notice--loading" role="status"><span class="notice__icon" aria-hidden="true">◌</span><span>Loading the committed rule model…</span></div>
+
+<section id="policy-inputs" class="workspace" aria-labelledby="policy-heading" hidden>
+  <div class="section-heading"><div><p class="eyebrow">Bounded authoring</p><h2 id="policy-heading">Return-flow evidence</h2></div><div class="badge-row"><span class="manual-badge">MANUAL / NOT LIVE</span><span id="field-count" class="count-badge"></span></div></div>
+  <p class="section-intro">Fields and limits come from the committed backend rule contract. Values stay local and cannot change controller configuration.</p>
+  <form id="flow-form"><div id="flow-fields" class="field-grid"></div><div class="form-actions"><button type="submit"><span>Save authored policy</span><span aria-hidden="true">→</span></button><span class="form-actions__note">Creates immutable local evidence</span></div></form>
+</section>
+
+<section id="preview" class="result-card" aria-live="polite" hidden>
+  <div class="result-card__header"><div><p class="eyebrow">Backend-authored result</p><h2>Policy preview</h2></div><strong data-result="state" class="result-state"></strong></div>
+  <p data-result="revision" class="result-card__revision"></p>
+  <dl class="metrics-grid"><div><dt>Actual turnover</dt><dd data-result="turnover"></dd></div><div><dt>Minimum flow</dt><dd data-result="minimum-flow"></dd></div><div><dt>Flow difference</dt><dd data-result="difference"></dd></div><div><dt>Delivery efficiency</dt><dd data-result="efficiency"></dd></div></dl>
+  <p data-result="explanation" class="result-card__explanation"></p><p data-result="author-session" class="result-card__meta"></p>
+</section>

@@ -47,11 +47,11 @@ def _app(tmp_path: Path) -> FastAPI:
 def test_workbench_areas_are_distinct_full_page_routes(tmp_path: Path) -> None:
     app = _app(tmp_path)
     routes = {
-        "/workbench": ("overview", "Manual return-flow tools"),
-        "/workbench/system-map": ("system-map", "Trace the authored return path"),
+        "/workbench": ("overview", "Author, verify, and export"),
+        "/workbench/system-map": ("system-map", "Trace canonical and observed identities"),
         "/workbench/assurance": ("assurance", "Author the return-flow policy"),
         "/workbench/evidence": ("evidence", "Know what ReefProof can prove"),
-        "/workbench/sessions": ("sessions", "Bound authorship to a local session"),
+        "/workbench/sessions": ("sessions", "Review durable authorship history"),
         "/workbench/database": ("database", "Inspect the durable SQLite boundary"),
     }
 
@@ -76,7 +76,8 @@ def test_each_workbench_route_contains_only_its_primary_workflow(tmp_path: Path)
     app = _app(tmp_path)
 
     overview = _get(app, "/workbench").text
-    assert "Manual return-flow check" in overview
+    assert "Primary project" in overview
+    assert "Author, verify, and export" in overview
     assert 'id="project-session-form"' in overview
     assert 'id="project-overview"' in overview
     assert 'id="electrical-posture"' in overview
@@ -110,7 +111,9 @@ def test_each_workbench_route_contains_only_its_primary_workflow(tmp_path: Path)
     assert 'id="physical-twin"' not in evidence
 
     system_map = _get(app, "/workbench/system-map").text
-    assert 'id="physical-twin"' in system_map
+    assert 'id="reconciliation-status"' in system_map
+    assert "never guesses by name or topology" in system_map
+    assert 'id="physical-twin"' not in system_map
     assert 'id="flow-form"' not in system_map
     assert 'id="rule-catalog"' not in system_map
 
@@ -119,8 +122,8 @@ def test_each_workbench_route_contains_only_its_primary_workflow(tmp_path: Path)
     assert 'id="project-sessions"' in sessions
     assert 'id="interview-session-list"' in sessions
     assert 'id="candidate-review-list"' in sessions
-    assert "Secret stays out of evidence" in sessions
-    assert "It cannot mutate" in sessions
+    assert "Credentials stay out of evidence" in sessions
+    assert "It cannot mutate HYDROS" in sessions
     assert 'id="flow-form"' not in sessions
     assert 'id="rule-catalog"' not in sessions
     assert 'id="physical-twin"' not in sessions
@@ -180,15 +183,16 @@ def test_workbench_promises_only_available_manual_workflows(tmp_path: Path) -> N
     overview = _get(app, "/workbench").text
     assurance = _get(app, "/workbench/assurance").text
 
-    assert "Author one bounded return-flow policy" in overview
-    assert "Operator-export import and electrical mapping authoring are not available" in overview
-    assert "Review unproven mappings" in overview
+    assert "Fetch and review the six-tab authored-system source" in overview
+    assert "Record bounded physical verification" in overview
+    assert "Preview and export deterministic" in overview
+    assert "Review unproven mappings" not in overview
     assert "Complete electrical mappings" not in overview
     assert "Understand the system" not in overview
     assert "exact evidence behind every result" not in overview
     assert "Move the assurance model forward" not in overview
     assert "aquarium-scene" not in overview
     assert overview.count('name="bootstrap_secret"') == 1
-    assert overview.count('name="totp_code"') == 1
+    assert overview.count('name="totp_code"') == 2
     assert assurance.count('name="bootstrap_secret"') == 1
     assert assurance.count('name="totp_code"') == 1

@@ -72,6 +72,20 @@ replace or duplicate that generic row.
 | `/v1/projects/{project_id}` | `GET` | operatorSession | operatorSession | none | `200` |
 | `/v1/projects/{project_id}/state` | `GET` | operatorSession | operatorSession | none | `200` |
 | `/v1/projects/{project_id}/brief` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/authored-sources` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/authored-sources/google-sheets/status` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/authored-sources/google-sheets/sync` | `POST` | operatorSession | acceptanceAuthority | audit; immutable source snapshot, import batch, and review candidates on changed valid content | `201` |
+| `/v1/projects/{project_id}/imports` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/imports/{import_batch_id}` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/imports/{import_batch_id}/review` | `POST` | operatorSession | acceptanceAuthority | audit; immutable candidate decisions, canonical events, and external identity bindings on acceptance | `201` |
+| `/v1/projects/{project_id}/labels` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/labels.csv` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/reconciliation` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/reconciliation/bindings` | `POST` | operatorSession | acceptanceAuthority | audit; immutable explicit observed-to-canonical identity binding | `201` |
+| `/v1/projects/{project_id}/commissioning` | `GET` | operatorSession | operatorSession | none | `200` |
+| `/v1/projects/{project_id}/commissioning/verifications` | `POST` | operatorSession | acceptanceAuthority | audit; immutable commissioning verification on success | `201` |
+| `/v1/projects/{project_id}/commissioning/label-verifications` | `POST` | operatorSession | acceptanceAuthority | audit; immutable physical label verification on success | `201` |
+| `/v1/projects/{project_id}/commissioning/failure-mode-dispositions` | `POST` | operatorSession | acceptanceAuthority | audit; immutable failure-mode disposition on success | `201` |
 | `/v1/projects/{project_id}/sessions` | `GET` | operatorSession | operatorSession | none | `200` |
 | `/v1/projects/{project_id}/sessions/{interview_session_id}` | `GET` | operatorSession | operatorSession | none | `200` |
 | `/v1/projects/{project_id}/candidates` | `GET` | operatorSession | operatorSession | none | `200` |

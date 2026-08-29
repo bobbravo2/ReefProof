@@ -4,7 +4,7 @@
 
 # ReefProof
 
-ReefProof 0.1.1 is an offline configuration-assurance workbench for living
+ReefProof 0.1.2 is a local configuration-assurance workbench for living
 systems. It normalizes explicit local evidence, builds typed reliability
 graphs, evaluates versioned safety invariants, and preserves results in SQLite.
 Operators can use the CLI, the browser Workbench, or the macOS desktop shell.
@@ -13,7 +13,9 @@ HYDROS remains runtime authority.
 
 > ReefProof may observe, model, challenge, and alert on a living system. It may not silently take control of one.
 
-v0.1.1 has no live HYDROS transport. It cannot change controller configuration
+v0.1.2 has no live HYDROS transport. Its optional server-side Google Sheets
+source is strictly read-only and requires explicit configuration. ReefProof
+cannot change controller configuration
 or equipment, publish MQTT messages, or perform automatic remediation. Bundled
 examples are synthetic; manual Workbench evidence is labeled
 `MANUAL / NOT LIVE`.
@@ -72,6 +74,9 @@ Principal CLI commands include:
 - `snapshot`, `hydros-check`, `graph`, `check`, and `explain` for assurance;
 - `infra-smoke` for the network-free persistence scenario;
 - `database schema|inspect|verify|backup|restore` for bounded SQLite operations;
+- `source validate|load|review|accept` for read-only Sheet validation and explicit
+  human acceptance;
+- `labels export [--output PATH]` for deterministic project-named, versioned CSV batches;
 - `serve` and `daemon start|stop|status|restart` for the local Workbench; and
 - `auth sessions|revoke-session|totp` for sessions and authenticator apps.
 
@@ -168,6 +173,10 @@ private system identifiers.
 | `REEFPROOF_PROJECT_DISPLAY_NAME` | Human-readable project label | `Primary Reef System` |
 | `REEFPROOF_AUTHORITY_PRINCIPAL_ID` | Stable acceptance-authority identity | `local-acceptance-authority` |
 | `REEFPROOF_AUTHORITY_DISPLAY_NAME` | Acceptance-authority display label | `Local acceptance authority` |
+| `REEFPROOF_GOOGLE_SHEETS_ENABLED` | Enable the server-side read-only authored source | `false` |
+| `REEFPROOF_GOOGLE_SHEETS_ID` | Configured spreadsheet identity | Required when enabled; never sent to the browser |
+| `REEFPROOF_GOOGLE_SHEETS_ALIAS` | Human-readable source alias | `primary-design` |
+| `REEFPROOF_GOOGLE_CREDENTIAL_FILE` | Service-account credential path | Required when enabled; never persisted as evidence |
 | `REEFPROOF_DESKTOP_MODE` | Desktop connection mode | `local-managed` or `remote-hosted` |
 | `REEFPROOF_REMOTE_ORIGIN` | Remote desktop backend | Required in remote mode; explicit private IP origin only |
 | `REEFPROOF_HOSTED_RESTART_MODE` | Hosted restart adapter | `supervised-self-terminate` in production |

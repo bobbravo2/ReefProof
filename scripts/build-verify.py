@@ -47,6 +47,8 @@ def main() -> None:
     parser.add_argument("--sbom", type=Path, default=Path("reefproof.spdx.json"))
     parser.add_argument("--image-receipt", type=Path, default=Path("reefproof-image.json"))
     parser.add_argument("--binary", type=Path, default=Path("reefproof"))
+    parser.add_argument("--expected-display-identity", required=True)
+    parser.add_argument("--expected-revision", required=True)
     arguments = parser.parse_args()
 
     root = arguments.root.resolve()
@@ -90,11 +92,15 @@ def main() -> None:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != 1:
         raise ValueError("unsupported build manifest schema")
+    if manifest["product"]["display_identity"] != arguments.expected_display_identity:
+        raise ValueError("display identity does not match expected candidate identity")
     if (
         manifest["product"]["display_identity"]
         != f"{manifest['product']['name']} {manifest['product']['version']}"
     ):
         raise ValueError("manifest display identity does not match product name and version")
+    if manifest["source"]["revision"] != arguments.expected_revision:
+        raise ValueError("source revision does not match expected candidate revision")
 
     manifest_artifacts = {entry["name"]: entry for entry in manifest["artifacts"]}
     if len(manifest_artifacts) != len(manifest["artifacts"]):
@@ -139,6 +145,16 @@ def main() -> None:
         raise ValueError("container receipt missing data-directory contract")
     if config.get("Entrypoint") != [manifest["runtime"]["entrypoint"]]:
         raise ValueError("container receipt entrypoint does not match manifest")
+    if str(config.get("User", "")).strip().lower() in {
+        "",
+        "0",
+        "0:0",
+        "root",
+        "root:root",
+    }:
+        raise ValueError("container receipt configures a root user")
+    if config.get("Cmd") != ["version"]:
+        raise ValueError("container receipt default command is not one-shot version")
 
     for required in (
         binary_relative.as_posix(),

@@ -6,7 +6,7 @@ Implement and accept ReefProof v0.1.2 as the modular Workbench plus live Google 
 
 `docs/plans/2026-08-16-v0.1.2-modular-workbench-sheets-commissioning-labels.md`
 
-The first implementation work is Slice 0/1: reconcile dirty frontend/build ownership, capture an exact baseline from the working tree, then establish esbuild + Playwright + explicit page-owned frontend seams with deterministic fixtures for the incoming source/import/commissioning/labels APIs.
+Slices 0-7 are implemented locally through page-owned templates/controllers and explicit authored/observed reconciliation. The final dirty-tree `make check` gate passes, including the complete fixture-backed first-batch path and all shipped Workbench routes in Chromium. The exact next task is to create an authorized clean candidate identity for this reviewed tree, then perform candidate migration, packaged Electron, OCI, privacy, and loopback packaging acceptance without publishing or deploying. Repository packaging currently refuses the uncommitted dirty tree as designed.
 
 ## Product gate
 
@@ -29,11 +29,6 @@ Stable Sheet IDs remain namespaced external identities. ReefProof owns source-in
 
 ## Immediate completion criteria
 
-- Existing dirty template/build hunks have explicit ownership before modification; preserve the safe `method="post"` authentication fallback.
-- Exact-pinned esbuild and Playwright Test are introduced without changing the `/assets/workbench.js` deployment contract.
-- Frontend initialization uses server-authored page identity rather than selector discovery.
-- Shared session/request/status seams and page-controller mount contracts exist and are browser-testable.
-- The browser fixture server has future-realistic fixtures for source freshness, one authored import, invalid/ambiguous Sheet schema, commissioning state, removable cable endpoint state, and deterministic labels.
 - A backend `AuthoredSystemSource` boundary and read-only live Google Sheets implementation can fetch the six in-scope tabs without directly mutating canonical state.
 - Duplicate headers/IDs, broken references, and unsupported Sheet schema fail closed.
 - Source snapshots/import batches retain source hash, freshness, and cell/range provenance without persisting Google credentials.

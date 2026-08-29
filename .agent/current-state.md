@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-08-16
+Last updated: 2026-08-28
 
 ## Current gate
 
@@ -20,7 +20,7 @@ HYDROS remains runtime authority. ReefProof remains structurally read-only towar
 
 - v0.1.1 was published on 2026-08-15 as the supported hotfix for the v0.1.0 Workbench bundle omission.
 - The v0.1.1 OCI release restores the browser Workbench bundle and preserves the existing database schema.
-- The current package version is `0.1.1`.
+- The released package version is `0.1.1`; the dirty working candidate reports `0.1.2`.
 - Existing local-managed and remote-hosted desktop/runtime boundaries, versioned APIs, authentication/session behavior, SQLite backup/replay behavior, and no-control HYDROS boundary remain compatibility requirements for v0.1.2.
 
 ## Current capability
@@ -30,10 +30,17 @@ HYDROS remains runtime authority. ReefProof remains structurally read-only towar
 - SQLite stores configuration snapshots, evaluation runs/results, finding transitions, return-flow policy revisions, authority chains, trust events, and schema migrations.
 - The local CLI, loopback Workbench, OCI image, and macOS Electron shell exist without live HYDROS access, MQTT publication, controller mutation, or automatic remediation.
 - All non-presentation APIs are versioned under `/v1` and generated OpenAPI contracts feed the TypeScript frontend.
-- The current Workbench remains structurally monolithic: one conditional Jinja template plus one large TypeScript controller initialize Overview, Assurance, Evidence, System Map, Sessions, Database, session/auth, trust, electrical posture, and project surfaces.
-- The current real-system electrical posture can expose imported HYDROS evidence and unproven authored domains, but the Workbench does not yet provide live Google Sheets authored import, electrical mapping authoring/review, commissioning workflow, or label generation.
+- All nine Workbench routes render page-owned templates and mount page controllers through server-authored page identity while retaining one tracked generated `/assets/workbench.js`. Shared code owns the session shell, request boundary, reconciliation component, and registry; selector-discovered initialization and obsolete route implementations have been removed from the entrypoint.
+- Exact-pinned Playwright Test and Chromium run authenticated real `/workbench*` routes against an isolated loopback ReefProof fixture service, execute the tracked generated asset, reject off-origin traffic, and cover Overview, Source, Commissioning, Labels, Assurance, Evidence, System Map, Sessions, and Database.
+- The v0.1.2 backend has a server-only read-only Google Sheets credential/source boundary, strict six-tab normalization, append-only source/fetch/import evidence, deterministic semantic diffs and candidates, durable external identity bindings, and fresh-TOTP batch acceptance/rejection. Equivalent content refreshes freshness without duplicating canonical facts; failed fetches preserve accepted state and report `UNAVAILABLE`.
+- Authenticated Source/Imports, Commissioning, and Labels Workbench routes now use generated contracts and the tracked bundle. They can fetch/review an authored batch, derive evidence-backed device commissioning posture, record bounded verification/failure-mode/physical-label evidence, and download a deterministic versioned project-named CSV.
+- Canonical imported Device, Port, Cable, and PowerSupply subjects are separate from Sheet row identity. Commissioning remains UNKNOWN/BLOCKED until identity/location, electrical and endpoint inventory, DEVICE/PORT/both cable-end labels, power/comms evidence, every authored control-surface fault test, applicable failure-mode dispositions, and contradiction checks pass.
+- The complete fixture-backed source sync -> grouped review -> acceptance -> explicit authored/observed identity binding -> commissioning state machine -> four-kind CSV path passes in real Chromium in 23.1 seconds. It verifies physical connection, power, communications disposition, bounded fault test, all failure modes, DEVICE/PORT/CABLE labels, final `COMMISSIONED`, and the versioned project-named CSV. This is local fixture-backed evidence, not live Google Sheets acceptance.
+- Explicit HYDROS identity bindings require accepted canonical identity, OBSERVED evidence, fresh authority/TOTP, rationale, and an evidence reference. Reconciliation never guesses by display name or topology, and conflicts block commissioning. HYDROS remains offline, sanitized, read-only evidence.
+- Database schema 0006 preserves append-only Sheet and non-Sheet identity provenance; downgrade refuses to discard immutable non-Sheet evidence. Label source provenance excludes non-Sheet evidence from import-batch identifiers.
+- The final dirty-tree source gate passes after reviewer acceptance: `make check` verifies formatting/lint/type checking, generated OpenAPI/TypeScript and Workbench parity, nine Node tests, five loopback Chromium flows, 25 desktop source tests, and 561 Python tests. The clean candidate artifact gate remains unproven because repository packaging correctly refuses the uncommitted dirty tree.
 - Canonical project acceptance currently supports append-only candidate -> human decision -> domain event replay, but candidate domain validation is still narrow and must be extended for authored system imports.
-- The current physical proposal model is still the fixed Mock Collective return-flow model and must not become the permanent canonical physical-system model.
+- The legacy fixed Mock Collective return-flow API remains compatible for Assurance/Evidence fixtures, but the real Overview and System Map no longer present it as the Primary Reef System model.
 
 ## Accepted v0.1.2 product decisions
 
@@ -55,12 +62,7 @@ The current production workbook contains duplicated `POWER_DOMAIN_ID` headers in
 
 ## Immediate implementation focus
 
-- Reconcile ownership of current dirty frontend/build hunks and capture a fresh exact test baseline.
-- Add exact-pinned esbuild and Playwright Test while preserving the single `/assets/workbench.js` artifact.
-- Replace selector-discovered frontend initialization with explicit server-authored page mounts and narrow shared seams.
-- Add deterministic browser fixtures for source/import/commissioning/labels before those pages are implemented.
-- Add the backend `AuthoredSystemSource` provider boundary and a read-only server-side Google Sheets source implementation.
-- Build strict six-tab normalization, source provenance, source freshness, import-batch persistence, semantic diffs, identity bindings, and deterministic candidate validation.
+- Create an authorized clean candidate identity for the reviewed v0.1.2 tree, then run candidate migration, packaged Electron, OCI, artifact-privacy, and loopback packaging acceptance without publishing or deploying. Live production Google Sheets and P-touch acceptance require explicit external-system authority and remain outside fixture evidence.
 
 ## Blocking unknowns / implementation decisions intentionally deferred behind replaceable seams
 

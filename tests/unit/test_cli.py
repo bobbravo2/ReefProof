@@ -42,11 +42,38 @@ def test_hydros_check_persists_operator_confirmed_fahrenheit_pass(
     assert "Evaluation persisted:" in result.stdout
 
 
+def test_hydros_check_emits_structured_release_parity_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("REEFPROOF_DATA_DIRECTORY", str(tmp_path / "evidence"))
+    result = runner.invoke(
+        app,
+        [
+            "hydros-check",
+            "--hydros-export",
+            "tests/fixtures/configuration/hydros-download-config-sanitized.json",
+            "--captured-at",
+            "2026-07-31T19:45:00-04:00",
+            "--expected-temperature-unit",
+            "fahrenheit",
+            "--format",
+            "json",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    document = json.loads(result.stdout)
+    assert document["invariant_id"] == "RP-UNIT-001"
+    assert document["state"] == "PASS"
+    assert document["severity"] == "info"
+    assert document["snapshot_hash"].startswith("sha256:")
+    assert document["evidence"] == ['$.Option["Option"].tempFmt = "1"']
+
+
 def test_version_reports_build_identity() -> None:
     result = runner.invoke(app, ["version"])
 
     assert result.exit_code == 0
-    assert "ReefProof 0.1.1" in result.stdout
+    assert "ReefProof 0.1.2" in result.stdout
     assert "Python 3.13" in result.stdout
     assert "Git commit:" in result.stdout
     assert "Build state:" in result.stdout

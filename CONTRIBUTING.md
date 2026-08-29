@@ -37,6 +37,31 @@ The browser Workbench bundle is generated from
 `src/reefproof/api/web/static/workbench.js` directly. The generated bundle is a
 tracked release input; rebuild it with `npm run build` and commit it with its
 TypeScript source so clean release staging cannot omit the browser application.
+`make setup` installs the exact Chromium build required by the pinned
+`@playwright/test` after the clean `npm ci`, so `make test/browser` and
+`make check` do not rely on a developer Playwright cache.
+
+## Extending the v0.1.2 Workbench spine
+
+- Add a page by registering its server-authored identity in
+  `api/workbench_pages.py`, adding its route/template section, and registering
+  exactly one typed controller. Keep `/assets/workbench.js` as the sole bundle.
+- Add an API-backed projection as a typed backend model, an ADR 0008 route row,
+  generated OpenAPI types, a narrow runtime guard, and a real Chromium flow.
+- Add a future Sheet tab through one strict tab specification and adapter. It
+  must produce normalized records with cell-range provenance, never canonical
+  state or browser-owned provider data.
+- Add an external identity namespace by extending the deterministic candidate
+  and validator allowlists. Source IDs remain separate from ReefProof-owned
+  canonical IDs and must be uniqueness-tested.
+- Add a commissioning requirement in `commissioning.py` as a backend-derived
+  PASS/FAIL/UNKNOWN result backed by immutable evidence. Missing evidence is
+  UNKNOWN and cannot commission a device.
+- Add a label kind or template in `labels.py`, preserving deterministic output,
+  source-batch provenance, and the canonical DEVICE / PORT / CABLE / POWER
+  SUPPLY vocabulary unless a later accepted plan changes it.
+- Add a fault-test/control-surface type as explicit typed verification evidence;
+  require a bounded safe test or simulation and never invoke equipment control.
 
 For version bumps, tags, GHCR publication, or corrections to an existing GitHub
 Release, follow [the release and release-notes runbook](docs/releasing.md). Every

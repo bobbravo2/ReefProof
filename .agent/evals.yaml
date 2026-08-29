@@ -41,6 +41,11 @@ evaluations:
     command: node --test tests/web/playwright_mcp_harness.test.cjs
     status: active
 
+  - id: UX-002
+    name: Shipped Workbench routes and first CSV batch run through deterministic loopback Chromium
+    command: make test/browser
+    status: active
+
   - id: PHASE1-001
     name: Offline canonical configuration snapshots are deterministic
     command: uv run pytest tests/unit/test_configuration_fixtures.py tests/unit/test_cli.py

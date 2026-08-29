@@ -7,6 +7,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from reefproof.cli import app
+from reefproof.storage import DATABASE_SCHEMA_VERSION
 
 runner = CliRunner()
 
@@ -60,7 +61,7 @@ def test_storage_schema_and_verify_support_restore_checks(tmp_path: Path, monkey
     verify = runner.invoke(app, ["database", "verify"])
 
     assert schema.exit_code == 0, schema.stdout
-    assert json.loads(schema.stdout)["schema_version"] == 1
+    assert json.loads(schema.stdout)["schema_version"] == DATABASE_SCHEMA_VERSION
     assert verify.exit_code == 0, verify.stdout
     assert json.loads(verify.stdout)["status"] == "PASS"
 

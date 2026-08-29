@@ -5,6 +5,7 @@
     "moduleResolution": "Bundler",
     "lib": ["DOM", "ES2022"],
     "strict": true,
+    "noUnusedLocals": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,

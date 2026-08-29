@@ -123,6 +123,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/projects/{project_id}/authored-sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Authored Sources */
+        get: operations["project_authored_sources_v1_projects__project_id__authored_sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/authored-sources/google-sheets/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Authored Source Status */
+        get: operations["project_authored_source_status_v1_projects__project_id__authored_sources_google_sheets_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/authored-sources/google-sheets/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sync Project Authored Source */
+        post: operations["sync_project_authored_source_v1_projects__project_id__authored_sources_google_sheets_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/projects/{project_id}/brief": {
         parameters: {
             query?: never;
@@ -168,6 +219,193 @@ export interface paths {
         put?: never;
         /** Review Candidate */
         post: operations["review_candidate_v1_projects__project_id__candidates__candidate_fact_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/commissioning": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Commissioning */
+        get: operations["project_commissioning_v1_projects__project_id__commissioning_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/commissioning/failure-mode-dispositions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Failure Mode Disposition */
+        post: operations["create_failure_mode_disposition_v1_projects__project_id__commissioning_failure_mode_dispositions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/commissioning/label-verifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Label Verification */
+        post: operations["create_label_verification_v1_projects__project_id__commissioning_label_verifications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/commissioning/verifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Commissioning Verification */
+        post: operations["create_commissioning_verification_v1_projects__project_id__commissioning_verifications_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Imports */
+        get: operations["project_imports_v1_projects__project_id__imports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/imports/{import_batch_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Import Review */
+        get: operations["project_import_review_v1_projects__project_id__imports__import_batch_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/imports/{import_batch_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Review Authored Import */
+        post: operations["review_authored_import_v1_projects__project_id__imports__import_batch_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/labels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Labels */
+        get: operations["project_labels_v1_projects__project_id__labels_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/labels.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Labels Csv */
+        get: operations["project_labels_csv_v1_projects__project_id__labels_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/reconciliation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Project Reconciliation */
+        get: operations["project_reconciliation_v1_projects__project_id__reconciliation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/projects/{project_id}/reconciliation/bindings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bind Observed Identity */
+        post: operations["bind_observed_identity_v1_projects__project_id__reconciliation_bindings_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -564,6 +802,102 @@ export interface components {
          * @enum {string}
          */
         ActionType: "resolve_unknown" | "record_observation" | "attach_evidence" | "review_candidate_facts" | "review_dependency" | "challenge_finding" | "operator_decision";
+        /** AuthoredImportReview */
+        AuthoredImportReview: {
+            /** Import Batch Id */
+            import_batch_id: string;
+            /** Objects */
+            objects: components["schemas"]["ImportObjectReview"][];
+            /** Source Snapshot Hash */
+            source_snapshot_hash: string;
+            /** State Counts */
+            state_counts: {
+                [key: string]: number;
+            };
+            /** Valid */
+            valid: boolean;
+        };
+        /** AuthoredImportReviewRequest */
+        AuthoredImportReviewRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "ACCEPTED" | "REJECTED";
+            /** Rationale */
+            rationale: string;
+            /** Totp Code */
+            totp_code: string;
+        };
+        /** AuthoredImportReviewResponse */
+        AuthoredImportReviewResponse: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "ACCEPTED" | "REJECTED";
+            /** Import Batch Id */
+            import_batch_id: string;
+            /** Project Sequence */
+            project_sequence: number;
+            /** Reviewed Candidate Count */
+            reviewed_candidate_count: number;
+        };
+        /** AuthoredImportSummary */
+        AuthoredImportSummary: {
+            /** Diagnostic Count */
+            diagnostic_count: number;
+            /**
+             * Fetched At
+             * Format: date-time
+             */
+            fetched_at: string;
+            /** Import Batch Id */
+            import_batch_id: string;
+            /** Normalized Content Hash */
+            normalized_content_hash: string;
+            /** Record Counts */
+            record_counts: {
+                [key: string]: number;
+            };
+            /**
+             * Review Status
+             * @enum {string}
+             */
+            review_status: "INVALID" | "PENDING_REVIEW" | "ACCEPTED" | "REJECTED";
+            /** Source Snapshot Hash */
+            source_snapshot_hash: string;
+            /** Valid */
+            valid: boolean;
+        };
+        /** AuthoredSourceConfiguration */
+        AuthoredSourceConfiguration: {
+            /**
+             * Configured At
+             * Format: date-time
+             */
+            configured_at: string;
+            /** Freshness Seconds */
+            freshness_seconds: number;
+            /** Project Id */
+            project_id: string;
+            /** Source Alias */
+            source_alias: string;
+            /** Source Configuration Id */
+            source_configuration_id: string;
+            /** Spreadsheet Id */
+            spreadsheet_id: string;
+        };
+        /** AuthoredSourceStatus */
+        AuthoredSourceStatus: {
+            /** Detail */
+            detail: string;
+            health: components["schemas"]["SourceHealth"];
+            /** Last Successful Fetch At */
+            last_successful_fetch_at?: string | null;
+            /** Latest Snapshot Hash */
+            latest_snapshot_hash?: string | null;
+        };
         /**
          * BlockerState
          * @enum {string}
@@ -715,6 +1049,106 @@ export interface components {
             /** Primary Key Position */
             primary_key_position: number;
         };
+        /** CommissioningDevice */
+        CommissioningDevice: {
+            /** Canonical Device Id */
+            canonical_device_id: string;
+            /** Device Id */
+            device_id: string;
+            /** Display Name */
+            display_name: string;
+            /** Next Action */
+            next_action: string | null;
+            /** Requirements */
+            requirements: components["schemas"]["CommissioningRequirement"][];
+            state: components["schemas"]["CommissioningState"];
+        };
+        /** CommissioningProjection */
+        CommissioningProjection: {
+            /** Blocked Count */
+            blocked_count: number;
+            /** Commissioned Count */
+            commissioned_count: number;
+            /** Devices */
+            devices: components["schemas"]["CommissioningDevice"][];
+            /** Project Id */
+            project_id: string;
+            /** Unknown Requirement Count */
+            unknown_requirement_count: number;
+        };
+        /** CommissioningRequirement */
+        CommissioningRequirement: {
+            /** Detail */
+            detail: string;
+            /**
+             * Evidence Ids
+             * @default []
+             */
+            evidence_ids: string[];
+            /** Label */
+            label: string;
+            /** Requirement Id */
+            requirement_id: string;
+            state: components["schemas"]["EvidenceState"];
+        };
+        /**
+         * CommissioningState
+         * @enum {string}
+         */
+        CommissioningState: "NOT_STARTED" | "IN_PROGRESS" | "BLOCKED" | "COMMISSIONED" | "REVOKED";
+        /** CommissioningVerification */
+        CommissioningVerification: {
+            /** Connection Id */
+            connection_id?: string | null;
+            /** Control Surface Id */
+            control_surface_id?: string | null;
+            /** Device Id */
+            device_id: string;
+            /** Evidence Reference */
+            evidence_reference: string;
+            kind: components["schemas"]["VerificationKind"];
+            label_endpoint?: components["schemas"]["LabelEndpoint"] | null;
+            /** Label Id */
+            label_id?: string | null;
+            /** Manifest Id */
+            manifest_id?: string | null;
+            outcome: components["schemas"]["VerificationOutcome"];
+            /** Project Id */
+            project_id: string;
+            /** Rationale */
+            rationale: string;
+            /** Verification Id */
+            verification_id: string;
+            /**
+             * Verified At
+             * Format: date-time
+             */
+            verified_at: string;
+            /** Verified By Actor Id */
+            verified_by_actor_id: string;
+        };
+        /** CommissioningVerificationRequest */
+        CommissioningVerificationRequest: {
+            /** Connection Id */
+            connection_id?: string | null;
+            /** Control Surface Id */
+            control_surface_id?: string | null;
+            /** Device Id */
+            device_id: string;
+            /** Evidence Reference */
+            evidence_reference: string;
+            kind: components["schemas"]["VerificationKind"];
+            label_endpoint?: components["schemas"]["LabelEndpoint"] | null;
+            /** Label Id */
+            label_id?: string | null;
+            /** Manifest Id */
+            manifest_id?: string | null;
+            outcome: components["schemas"]["VerificationOutcome"];
+            /** Rationale */
+            rationale: string;
+            /** Totp Code */
+            totp_code: string;
+        };
         /** CompactMapReference */
         CompactMapReference: {
             /** Provenance */
@@ -856,6 +1290,11 @@ export interface components {
             status: components["schemas"]["EvidenceStatus"];
         };
         /**
+         * EvidenceState
+         * @enum {string}
+         */
+        EvidenceState: "PASS" | "FAIL" | "UNKNOWN";
+        /**
          * EvidenceStatus
          * @enum {string}
          */
@@ -871,6 +1310,48 @@ export interface components {
             state_type: string;
             /** To State */
             to_state: string;
+        };
+        /** FailureModeDisposition */
+        FailureModeDisposition: {
+            /**
+             * Decided At
+             * Format: date-time
+             */
+            decided_at: string;
+            /** Decided By Actor Id */
+            decided_by_actor_id: string;
+            /** Device Id */
+            device_id: string;
+            disposition: components["schemas"]["FailureModeDispositionKind"];
+            /** Disposition Id */
+            disposition_id: string;
+            /** Evidence Reference */
+            evidence_reference: string;
+            /** Failure Mode Id */
+            failure_mode_id: string;
+            /** Project Id */
+            project_id: string;
+            /** Rationale */
+            rationale: string;
+        };
+        /**
+         * FailureModeDispositionKind
+         * @enum {string}
+         */
+        FailureModeDispositionKind: "ACCEPTED_RISK" | "ALERTED_DETECTED" | "AUTOMATED_MITIGATION";
+        /** FailureModeDispositionRequest */
+        FailureModeDispositionRequest: {
+            /** Device Id */
+            device_id: string;
+            disposition: components["schemas"]["FailureModeDispositionKind"];
+            /** Evidence Reference */
+            evidence_reference: string;
+            /** Failure Mode Id */
+            failure_mode_id: string;
+            /** Rationale */
+            rationale: string;
+            /** Totp Code */
+            totp_code: string;
         };
         /** ForeignKeySchema */
         ForeignKeySchema: {
@@ -915,6 +1396,37 @@ export interface components {
             operation: string;
             /** Status */
             status: string;
+        };
+        /**
+         * ImportChangeState
+         * @enum {string}
+         */
+        ImportChangeState: "NEW" | "CHANGED" | "UNCHANGED" | "CONFLICT" | "INVALID" | "REMOVED_FROM_SOURCE";
+        /** ImportFactChange */
+        ImportFactChange: {
+            /** Accepted Value */
+            accepted_value?: string | number | boolean | null;
+            /** Attribute */
+            attribute: string;
+            /** Proposed Value */
+            proposed_value: string | null;
+            state: components["schemas"]["ImportChangeState"];
+        };
+        /** ImportObjectReview */
+        ImportObjectReview: {
+            /** Canonical Subject Id */
+            canonical_subject_id: string;
+            /** Changes */
+            changes: components["schemas"]["ImportFactChange"][];
+            /** External Id */
+            external_id: string;
+            /** External Namespace */
+            external_namespace: string;
+            /** Source Range */
+            source_range: string | null;
+            state: components["schemas"]["ImportChangeState"];
+            /** Tab */
+            tab: string;
         };
         /** IndexSchema */
         IndexSchema: {
@@ -1074,6 +1586,93 @@ export interface components {
             version: string;
         };
         /**
+         * LabelEndpoint
+         * @enum {string}
+         */
+        LabelEndpoint: "ITEM" | "FROM" | "TO";
+        /**
+         * LabelKind
+         * @enum {string}
+         */
+        LabelKind: "DEVICE" | "PORT" | "CABLE" | "POWER SUPPLY";
+        /** LabelManifest */
+        LabelManifest: {
+            /**
+             * Label Policy Version
+             * @default labels-v1
+             */
+            label_policy_version: string;
+            /** Manifest Id */
+            manifest_id: string;
+            /**
+             * Manifest Schema Version
+             * @default labels-v1
+             */
+            manifest_schema_version: string;
+            /** Project Id */
+            project_id: string;
+            /** Project Name */
+            project_name: string;
+            /** Records */
+            records: components["schemas"]["LabelRecord"][];
+            /** Source Project Sequence */
+            source_project_sequence: number;
+        };
+        /** LabelRecord */
+        LabelRecord: {
+            /** Canonical Subject Id */
+            canonical_subject_id: string;
+            /** Copies */
+            copies: number;
+            /** Display Id */
+            display_id: string;
+            /**
+             * From Device
+             * @default
+             */
+            from_device: string;
+            /**
+             * From Port
+             * @default
+             */
+            from_port: string;
+            /**
+             * From Zone
+             * @default
+             */
+            from_zone: string;
+            /** Label Id */
+            label_id: string;
+            label_kind: components["schemas"]["LabelKind"];
+            /** Primary Text */
+            primary_text: string;
+            /**
+             * Secondary Text
+             * @default
+             */
+            secondary_text: string;
+            /**
+             * Source Import Batch Ids
+             * @default []
+             */
+            source_import_batch_ids: string[];
+            /**
+             * To Device
+             * @default
+             */
+            to_device: string;
+            /**
+             * To Port
+             * @default
+             */
+            to_port: string;
+            /**
+             * To Zone
+             * @default
+             */
+            to_zone: string;
+        };
+        /**
          * LogicalTreeNode
          * @description One bounded presentation node, not a general-purpose expression.
          */
@@ -1116,6 +1715,19 @@ export interface components {
             state_text: "CRITICAL" | "WARNING" | "INFO";
             /** Summary */
             summary: string;
+        };
+        /** ObservedIdentityBindingRequest */
+        ObservedIdentityBindingRequest: {
+            /** Canonical Device Id */
+            canonical_device_id: string;
+            /** Evidence Reference */
+            evidence_reference: string;
+            /** Observed Entity Id */
+            observed_entity_id: string;
+            /** Rationale */
+            rationale: string;
+            /** Totp Code */
+            totp_code: string;
         };
         /**
          * OverviewSection
@@ -1234,7 +1846,12 @@ export interface components {
             /**
              * Candidate
              * @default [
-             *       "candidates"
+             *       "candidates",
+             *       "imports/{import_batch_id}/review",
+             *       "reconciliation/bindings",
+             *       "commissioning/verifications",
+             *       "commissioning/failure-mode-dispositions",
+             *       "commissioning/label-verifications"
              *     ]
              */
             candidate: string[];
@@ -1254,7 +1871,13 @@ export interface components {
             /**
              * Derived
              * @default [
-             *       "brief"
+             *       "brief",
+             *       "authored-sources",
+             *       "imports",
+             *       "reconciliation",
+             *       "commissioning",
+             *       "labels",
+             *       "labels.csv"
              *     ]
              */
             derived: string[];
@@ -1401,6 +2024,48 @@ export interface components {
              */
             unresolved_assumptions: components["schemas"]["DomainReference"][];
         };
+        /** ReconciliationItem */
+        ReconciliationItem: {
+            /** Authored Display Id */
+            authored_display_id?: string | null;
+            /** Canonical Subject Id */
+            canonical_subject_id?: string | null;
+            /** Detail */
+            detail: string;
+            /** Observed Display Name */
+            observed_display_name?: string | null;
+            /** Observed Entity Id */
+            observed_entity_id?: string | null;
+            /** Observed Vendor Id */
+            observed_vendor_id?: string | null;
+            /** Reconciliation Id */
+            reconciliation_id: string;
+            state: components["schemas"]["ReconciliationState"];
+        };
+        /** ReconciliationProjection */
+        ReconciliationProjection: {
+            /** Authored Only Count */
+            authored_only_count: number;
+            /** Conflict Count */
+            conflict_count: number;
+            /** Items */
+            items: components["schemas"]["ReconciliationItem"][];
+            /** Matched Count */
+            matched_count: number;
+            /** Observed Captured At */
+            observed_captured_at?: string | null;
+            /** Observed Only Count */
+            observed_only_count: number;
+            /** Observed Snapshot Hash */
+            observed_snapshot_hash?: string | null;
+            /** Project Id */
+            project_id: string;
+        };
+        /**
+         * ReconciliationState
+         * @enum {string}
+         */
+        ReconciliationState: "MATCHED" | "AUTHORED_ONLY" | "OBSERVED_ONLY" | "CONFLICT";
         /**
          * ReturnFlowPolicyInputs
          * @description Operator-authored inputs; none are controller observations.
@@ -1616,6 +2281,11 @@ export interface components {
          */
         Severity: "info" | "warning" | "high" | "critical";
         /**
+         * SourceHealth
+         * @enum {string}
+         */
+        SourceHealth: "NOT_CONFIGURED" | "CURRENT" | "STALE" | "UNAVAILABLE" | "CHANGED";
+        /**
          * StoredCandidate
          * @description One persisted candidate with its immutable review status.
          */
@@ -1791,6 +2461,16 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /**
+         * VerificationKind
+         * @enum {string}
+         */
+        VerificationKind: "CONNECTION" | "POWER" | "COMMUNICATIONS" | "FAULT_TEST" | "LABEL";
+        /**
+         * VerificationOutcome
+         * @enum {string}
+         */
+        VerificationOutcome: "PASS" | "FAIL" | "NOT_APPLICABLE";
         /** WorkbenchAction */
         WorkbenchAction: {
             /**
@@ -2032,6 +2712,99 @@ export interface operations {
             };
         };
     };
+    project_authored_sources_v1_projects__project_id__authored_sources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoredSourceConfiguration"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_authored_source_status_v1_projects__project_id__authored_sources_google_sheets_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoredSourceStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_project_authored_source_v1_projects__project_id__authored_sources_google_sheets_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoredImportSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_project_brief_v1_projects__project_id__brief_get: {
         parameters: {
             query?: never;
@@ -2117,6 +2890,367 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CandidateReviewResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_commissioning_v1_projects__project_id__commissioning_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommissioningProjection"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_failure_mode_disposition_v1_projects__project_id__commissioning_failure_mode_dispositions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FailureModeDispositionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FailureModeDisposition"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_label_verification_v1_projects__project_id__commissioning_label_verifications_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommissioningVerificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommissioningVerification"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_commissioning_verification_v1_projects__project_id__commissioning_verifications_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommissioningVerificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommissioningVerification"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_imports_v1_projects__project_id__imports_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoredImportSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_import_review_v1_projects__project_id__imports__import_batch_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                import_batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoredImportReview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_authored_import_v1_projects__project_id__imports__import_batch_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                import_batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthoredImportReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthoredImportReviewResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_labels_v1_projects__project_id__labels_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LabelManifest"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_labels_csv_v1_projects__project_id__labels_csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    project_reconciliation_v1_projects__project_id__reconciliation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconciliationProjection"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bind_observed_identity_v1_projects__project_id__reconciliation_bindings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ObservedIdentityBindingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconciliationProjection"];
                 };
             };
             /** @description Validation Error */

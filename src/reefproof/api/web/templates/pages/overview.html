@@ -1,0 +1,72 @@
+<header class="hero">
+  <div class="hero__content">
+    <div>
+      <p class="eyebrow">Primary project</p>
+      <h1>{{ active_project_name }}</h1>
+      <p class="hero__summary">
+        Review authored source freshness, explicit observed identity matches, and the
+        next evidence-backed commissioning action.
+      </p>
+    </div>
+    <div class="provenance-card">
+      <span class="status-dot" aria-hidden="true"></span>
+      <div><strong>READ ONLY</strong><span>No equipment control</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="electrical-posture" class="panel panel--full electrical-posture" aria-labelledby="electrical-posture-heading" hidden>
+  <div class="section-heading">
+    <div><p class="eyebrow">Observed evidence</p><h2 id="electrical-posture-heading">Observed configuration posture</h2></div>
+    <span class="count-badge" data-electrical="import-state">UNKNOWN</span>
+  </div>
+  <p class="section-intro" data-electrical="headline"></p>
+  <div class="route-grid">
+    <article class="route-card route-card--primary"><span class="route-card__number">01</span><h3>Next action</h3><p data-electrical="action"></p><a data-electrical-action href="/workbench/system-map">Review evidence →</a></article>
+    <article class="route-card"><span class="route-card__number">02</span><h3>Observed coverage</h3><p data-electrical="coverage"></p><small data-electrical="freshness"></small></article>
+    <article class="route-card"><span class="route-card__number">03</span><h3>Unknown evidence</h3><p data-electrical="unknowns"></p><small>Missing evidence remains UNKNOWN, never PASS.</small></article>
+    <article class="route-card"><span class="route-card__number">04</span><h3>Protected normalization</h3><p data-electrical="redactions"></p><small>Counts and categories only; redacted values never reach this view.</small></article>
+  </div>
+</section>
+
+<section class="panel panel--full" aria-labelledby="reconciliation-heading">
+  <div class="section-heading"><div><p class="eyebrow">Authored / observed boundary</p><h2 id="reconciliation-heading">Identity reconciliation</h2></div></div>
+  <div id="reconciliation-status" class="notice notice--loading" role="status">Loading explicit identity bindings…</div>
+  <div id="reconciliation-items" class="fact-list"></div>
+  <form id="reconciliation-binding-form">
+    <h3>Bind one observed identity</h3>
+    <label>Canonical device ID <input name="canonical_device_id" required></label>
+    <label>Observed entity ID <input name="observed_entity_id" required></label>
+    <label>Evidence reference <input name="evidence_reference" required></label>
+    <label>Rationale <input name="rationale" required></label>
+    <label>Authenticator code <input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
+    <button type="submit">Record explicit identity binding</button>
+  </form>
+  <p id="reconciliation-binding-status" role="status"></p>
+</section>
+
+<section class="panel panel--full project-access" aria-labelledby="project-access-heading">
+  <div class="panel__header"><span class="panel__icon" aria-hidden="true">◎</span><div><p class="eyebrow">Durable project state</p><h2 id="project-access-heading">Open {{ active_project_name }}</h2></div></div>
+  <form id="project-session-form" class="project-session-form"><button type="submit">Refresh project state</button></form>
+  <div id="project-status" class="notice notice--empty" role="status"><span class="notice__icon" aria-hidden="true">○</span><span>Loading deterministic project state from this local runtime.</span></div>
+</section>
+
+<section id="project-overview" class="project-overview" aria-labelledby="project-overview-heading" hidden>
+  <div class="section-heading"><div><p class="eyebrow">Project brief</p><h2 id="project-overview-heading">What matters now</h2></div><span class="count-badge">DETERMINISTIC · NO LLM</span></div>
+  <div class="route-grid">
+    <article class="route-card route-card--primary"><span class="route-card__number">01</span><h3>Recommended next action</h3><p data-project="recommendation"></p><small data-project="recommendation-reasons"></small></article>
+    <article class="route-card"><span class="route-card__number">02</span><h3>Current posture</h3><p data-project="posture"></p><small data-project="posture-reasons"></small></article>
+    <article class="route-card"><span class="route-card__number">03</span><h3>Highest-consequence risks</h3><ul data-project-list="risks"></ul></article>
+    <article class="route-card"><span class="route-card__number">04</span><h3>Important unknowns</h3><ul data-project-list="unknowns"></ul></article>
+    <article class="route-card"><span class="route-card__number">05</span><h3>Recent accepted decisions</h3><ul data-project-list="decisions"></ul></article>
+    <a class="route-card" href="/workbench/sessions"><span class="route-card__number">06</span><h3>Continue interview</h3><p data-project="continue-interview"></p><strong>Open Sessions →</strong></a>
+  </div>
+</section>
+
+<section class="route-grid" aria-labelledby="areas-heading">
+  <div class="route-grid__heading"><p class="eyebrow">Primary workflow</p><h2 id="areas-heading">Author, verify, and export</h2></div>
+  <a class="route-card route-card--primary" href="/workbench/source"><span class="route-card__number">01</span><h3>Source</h3><p>Fetch and review the six-tab authored-system source.</p><strong>Review source →</strong></a>
+  <a class="route-card" href="/workbench/commissioning"><span class="route-card__number">02</span><h3>Commissioning</h3><p>Record bounded physical verification and failure-mode evidence.</p><strong>Verify devices →</strong></a>
+  <a class="route-card" href="/workbench/labels"><span class="route-card__number">03</span><h3>Labels</h3><p>Preview and export deterministic DEVICE, PORT, CABLE, and POWER SUPPLY labels.</p><strong>Export labels →</strong></a>
+  <a class="route-card" href="/workbench/system-map"><span class="route-card__number">04</span><h3>System Map</h3><p>Inspect authored and observed identities without inferred matches.</p><strong>View reconciliation →</strong></a>
+</section>

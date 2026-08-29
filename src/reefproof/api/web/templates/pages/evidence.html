@@ -1,0 +1,44 @@
+<header class="page-hero evidence-hero">
+  <div><p class="eyebrow">Evidence</p><h1 id="evidence-heading">Know what ReefProof can prove</h1><p class="page-hero__summary">Trace authored policy to its immutable revision and inspect executable PASS, FAIL, and UNKNOWN logic.</p></div>
+  <div class="provenance-card"><span class="status-dot" aria-hidden="true"></span><div><strong>MANUAL / NOT LIVE</strong><span>No controller observation</span></div></div>
+</header>
+<section class="evidence-summary" aria-label="Evidence model summary"><article><strong id="evidence-invariant-count">15</strong><span>Executable invariants</span></article><article><strong>3</strong><span>Explicit result states</span></article><article><strong>0</strong><span>Controller actions</span></article></section>
+<div id="evidence-status" class="notice notice--loading" role="status"><span class="notice__icon" aria-hidden="true">◌</span><span>Loading authored evidence…</span></div>
+
+<section class="panel panel--full trust-panel" aria-labelledby="trust-heading">
+  <div class="panel__header"><span class="panel__icon" aria-hidden="true">⊘</span><div><p class="eyebrow">Projection trust</p><h2 id="trust-heading">Revoke reliance without rewriting history</h2></div></div>
+  <form id="trust-session-form" class="project-session-form"><button type="submit">Refresh trust history</button></form>
+  <div id="trust-status" class="notice notice--empty" role="status"><span class="notice__icon" aria-hidden="true">○</span><span>Loading trust history for the authenticated project authority.</span></div>
+  <div id="trust-controls" hidden>
+    <p id="totp-enrollment-state"><strong>Phone authenticator:</strong> checking…</p><button id="totp-enroll" type="button">Enroll authenticator app</button>
+    <div id="totp-enrollment" hidden><img id="totp-qr" alt="One-time ReefProof authenticator app QR code"><form id="totp-confirm-form"><label class="field"><span>Six-digit authenticator code</span><input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label><button type="submit">Confirm enrollment</button></form></div>
+    <form id="trust-revocation-form">
+      <label class="field"><span>Scope</span><select name="scope_kind"><option value="evidence">Evidence ID</option><option value="subsystem">Subsystem ID</option></select></label>
+      <label class="field"><span>Canonical identifier</span><input name="scope_id" required></label><label class="field"><span>Rationale</span><input name="rationale" required></label><label class="field"><span>New six-digit authenticator code</span><input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label><button type="submit">Revoke trust</button>
+    </form>
+    <form id="trust-restoration-form">
+      <label class="field"><span>Active revocation ID</span><input name="revocation_id" required></label><label class="field"><span>Fresh accepted candidate IDs</span><input name="replacement_candidate_fact_ids" required></label><label class="field"><span>Restoration rationale</span><input name="rationale" required></label><label class="field"><span>New six-digit authenticator code</span><input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label><button type="submit">Restore trust</button>
+    </form>
+    <h3>Active revocations and audit history</h3><div id="trust-history" class="fact-list" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="evidence-layout" aria-label="Evidence details">
+  <article class="evidence-revision" aria-labelledby="revision-evidence-heading">
+    <div class="panel__header"><span class="panel__icon" aria-hidden="true">↳</span><div><p class="eyebrow">Authorship trail</p><h2 id="revision-evidence-heading">Latest policy revision</h2></div></div>
+    <div id="evidence-revision-empty" class="evidence-empty"><h3>No authored revision yet</h3><p>Save the first bounded policy in Assurance to create immutable local evidence.</p><a class="text-link" href="/workbench/assurance">Open Assurance →</a></div>
+    <div id="evidence-revision" hidden>
+      <div class="evidence-revision__state"><strong data-evidence="state"></strong><span data-evidence="revision"></span></div>
+      <dl class="evidence-ledger"><div><dt>Created</dt><dd data-evidence="created"></dd></div><div><dt>Author session</dt><dd data-evidence="author-session"></dd></div><div><dt>Template</dt><dd data-evidence="template"></dd></div><div><dt>Provenance</dt><dd data-evidence="provenance"></dd></div><div class="evidence-ledger__wide"><dt>Immutable revision ID</dt><dd data-evidence="revision-id"></dd></div></dl>
+      <h3 class="evidence-subheading">Authored inputs evaluated</h3><dl class="evidence-inputs"><div><dt>Main-tank volume</dt><dd data-evidence="tank-volume"></dd></div><div><dt>Pump-rated flow</dt><dd data-evidence="pump-flow"></dd></div><div><dt>Delivered flow</dt><dd data-evidence="delivered-flow"></dd></div><div><dt>Minimum turnover</dt><dd data-evidence="minimum-turnover"></dd></div></dl>
+      <p data-evidence="explanation" class="result-card__explanation"></p><a class="text-link" href="/workbench/assurance">Review or author policy →</a>
+    </div>
+  </article>
+  <aside class="evidence-boundary" aria-labelledby="proof-boundary-heading"><p class="eyebrow">Proof boundary</p><h2 id="proof-boundary-heading">What this evidence means</h2><div class="boundary-list"><div><strong>✓ It can prove</strong><p>Which manual inputs were evaluated, which committed rule ran, and which deterministic result the backend produced.</p></div><div><strong>× It does not prove</strong><p>Current tank conditions, live HYDROS state, delivered alerts, or that a human performed an action.</p></div></div></aside>
+</section>
+
+<section class="catalog-section" aria-labelledby="catalog-heading">
+  <div class="section-heading"><div><p class="eyebrow">Executable model</p><h2 id="catalog-heading">Inspect every invariant</h2></div><span class="count-badge">PASS · FAIL · UNKNOWN</span></div>
+  <p class="section-intro">UNKNOWN remains distinct from PASS whenever required evidence is absent or untrusted.</p>
+  <article id="rule-catalog" class="panel panel--full" hidden><div class="panel__header"><span class="panel__icon" aria-hidden="true">⌘</span><div><h3>Assurance rule catalog</h3><p id="catalog-summary"></p></div></div><label class="field field--compact" for="rule-template-selector"><span>Committed rule</span><select id="rule-template-selector"></select></label><div class="rule-summary"><span id="rule-template-severity" class="severity-badge"></span><h4 id="rule-template-heading"></h4></div><details><summary>Review rule logic and outcomes</summary><pre id="rule-tree" aria-label="Selected rule logical tree with required evidence and text outcomes"></pre></details></article>
+</section>

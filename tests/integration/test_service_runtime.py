@@ -24,7 +24,7 @@ from reefproof.settings import (
     Settings,
     StorageSettings,
 )
-from reefproof.storage import Database
+from reefproof.storage import DATABASE_SCHEMA_VERSION, Database
 
 NOW = datetime.fromisoformat("2026-07-26T00:00:00-04:00")
 UNSAFE = Path("tests/fixtures/configuration/unsafe-correlated-returns.json")
@@ -65,7 +65,7 @@ def test_runtime_factory_wires_database_pipeline_state_and_api(tmp_path: Path) -
 
     runtime = build_runtime(settings, started_at=NOW, console_stream=stream)
 
-    assert runtime.database.schema_version() == 1
+    assert runtime.database.schema_version() == DATABASE_SCHEMA_VERSION
     assert ProjectStore(runtime.database.path).list_projects()[0].project_id == (
         "primary-reef-system"
     )

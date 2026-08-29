@@ -26,6 +26,7 @@ BUILD_DIST_DIR := $(CURDIR)/dist
 
 BUILD_STAGE_STAMP := $(BUILD_STAMP_DIR)/stage
 BUILD_BINARY_STAMP := $(BUILD_STAMP_DIR)/binary
+BUILD_HYDROS_PARITY_STAMP := $(BUILD_STAMP_DIR)/hydros-runtime-parity
 BUILD_VERIFY_STAMP := $(BUILD_STAMP_DIR)/verified
 
 BUILD_BINARY := $(BUILD_DIST_DIR)/reefproof
@@ -39,7 +40,7 @@ BUILD_SOURCE_FILES := $(shell git ls-files 2>/dev/null | while IFS= read -r path
 
 SETUP_TARGETS := setup setup/help setup/bootstrap
 RUN_TARGETS := run run/help run/serve run/desktop run/desktop-app run/doctor run/snapshot run/graph run/check run/explain run/daemon-start run/daemon-stop run/daemon-status
-TEST_TARGETS := test test/help test/format test/format-check test/lint test/typecheck test/frontend test/desktop test/python test/baseline test/api-contract test/check
+TEST_TARGETS := test test/help test/format test/format-check test/lint test/typecheck test/frontend test/browser test/desktop test/python test/baseline test/api-contract test/check
 BUILD_TARGETS := build build/help build/preflight build/clean build/desktop build/desktop-icons build/desktop-app build/stage build/binary build/container build/sbom build/checksums build/manifest build/verify build/delivery
 OPS_TARGETS := ops ops/help ops/infra-smoke ops/database-backup ops/database-restore ops/database-verify
 AGENT_TARGETS := agent agent/help agent/eval agent/benchmark agent/usage
@@ -152,6 +153,7 @@ test/help:
 		'  test/lint          Lint Python code' \
 		'  test/typecheck     Run static type checks' \
 		'  test/frontend      Run frontend checks' \
+		'  test/browser       Run deterministic loopback Chromium tests' \
 		'  test/desktop       Run focused Electron shell tests' \
 		'  test/python        Run the Python test suite' \
 		'  test/baseline      Run the repository baseline gate' \
@@ -181,6 +183,9 @@ test/frontend:
 	npm test
 	npm run desktop:test
 
+test/browser:
+	npm run test:browser
+
 test/desktop:
 	npm run desktop:test
 
@@ -200,6 +205,7 @@ test/check:
 	uv run pyright
 	npm run check
 	npm test
+	npm run test:browser
 	npm run desktop:test
 	uv run pytest $(PYTEST_ARGS)
 
@@ -352,14 +358,27 @@ $(BUILD_CHECKSUMS): $(BUILD_MANIFEST) scripts/build-checksums.py | $(BUILD_DIST_
 		"$(notdir $(BUILD_SBOM))" \
 		"$(notdir $(BUILD_MANIFEST))"
 
-$(BUILD_VERIFY_STAMP): $(BUILD_CHECKSUMS) scripts/build-verify.py | $(BUILD_STAMP_DIR)
+$(BUILD_HYDROS_PARITY_STAMP): $(BUILD_IMAGE_RECEIPT) scripts/verify-hydros-runtimes.py tests/fixtures/configuration/hydros-download-config-sanitized.json | $(BUILD_STAMP_DIR)
+	uv run python scripts/verify-hydros-runtimes.py \
+		--source-cli "$(CURDIR)/reefproof" \
+		--binary "$(BUILD_BINARY)" \
+		--container-tool "$(CONTAINER_TOOL)" \
+		--image "$(BUILD_IMAGE_TAG)" \
+		--hydros-export tests/fixtures/configuration/hydros-download-config-sanitized.json \
+		--captured-at 2026-07-31T19:45:00-04:00 \
+		--expected-temperature-unit fahrenheit
+	touch "$@"
+
+$(BUILD_VERIFY_STAMP): $(BUILD_CHECKSUMS) $(BUILD_HYDROS_PARITY_STAMP) scripts/build-verify.py | $(BUILD_STAMP_DIR)
 	uv run python scripts/build-verify.py \
 		--root "$(BUILD_DIST_DIR)" \
 		--checksums "$(BUILD_CHECKSUMS)" \
 		--manifest "$(BUILD_MANIFEST)" \
 		--sbom "$(BUILD_SBOM)" \
 		--image-receipt "$(BUILD_IMAGE_RECEIPT)" \
-		--binary "$(BUILD_BINARY)"
+		--binary "$(BUILD_BINARY)" \
+		--expected-display-identity "$(DISPLAY_IDENTITY)" \
+		--expected-revision "$(SOURCE_REVISION)"
 	touch "$@"
 
 ops/help:

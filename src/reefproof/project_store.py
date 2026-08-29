@@ -148,6 +148,28 @@ class ProjectStore:
             self._ensure_candidate(connection, session_id, candidate)
             self._insert_decision(connection, decision)
 
+    def record_rejections(
+        self,
+        session_id: str,
+        records: tuple[tuple[CandidateFact, CandidateDecision], ...],
+    ) -> None:
+        """Atomically retain a complete rejected import review without events."""
+
+        if not records:
+            raise ValueError("bulk rejection requires at least one candidate")
+        with self._connection() as connection, connection:
+            connection.execute("BEGIN IMMEDIATE")
+            project = self._load_project(connection, records[0][0].project_id)
+            for candidate, decision in records:
+                if decision.decision is not CandidateDecisionKind.REJECTED:
+                    raise ValueError("bulk rejection requires rejected decisions")
+                if decision.candidate_fact_id != candidate.candidate_fact_id:
+                    raise ValueError("decision and candidate identities do not match")
+                if decision.decided_by_actor_id != project.acceptance_authority_principal_id:
+                    raise PermissionError("candidate rejection lacks acceptance authority")
+                self._ensure_candidate(connection, session_id, candidate)
+                self._insert_decision(connection, decision)
+
     def record_accepted_fact(
         self,
         session_id: str,
@@ -189,6 +211,50 @@ class ProjectStore:
                     record.event.model_dump_json(),
                 ),
             )
+
+    def record_accepted_facts(
+        self,
+        session_id: str,
+        records: tuple[AcceptedFactRecord, ...],
+    ) -> None:
+        """Atomically persist a prevalidated import-review authority chain."""
+
+        if not records:
+            raise ValueError("bulk acceptance requires at least one candidate")
+        with self._connection() as connection, connection:
+            connection.execute("BEGIN IMMEDIATE")
+            project = self._load_project(connection, records[0].candidate.project_id)
+            row = connection.execute(
+                "SELECT COALESCE(MAX(sequence), 0) AS last_sequence "
+                "FROM project_domain_events WHERE project_id = ?",
+                (project.project_id,),
+            ).fetchone()
+            assert row is not None
+            expected_sequence = int(row["last_sequence"]) + 1
+            for record in records:
+                self._require_project_authority(project, record)
+                if record.event.sequence != expected_sequence:
+                    raise ValueError("bulk event sequences must be contiguous")
+                self._ensure_candidate(connection, session_id, record.candidate)
+                self._insert_decision(connection, record.decision)
+                connection.execute(
+                    """
+                    INSERT INTO project_domain_events(
+                        event_id, project_id, sequence, candidate_fact_id,
+                        decision_id, occurred_at, document_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        record.event.event_id,
+                        record.event.project_id,
+                        record.event.sequence,
+                        record.event.candidate_fact_id,
+                        record.decision.decision_id,
+                        record.event.occurred_at.isoformat(),
+                        record.event.model_dump_json(),
+                    ),
+                )
+                expected_sequence += 1
 
     def load_project(self, project_id: str) -> Project:
         with self._connection() as connection:

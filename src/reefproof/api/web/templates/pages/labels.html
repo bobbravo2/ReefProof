@@ -1,0 +1,17 @@
+<header class="page-hero"><div><p class="eyebrow">Deterministic derived artifact</p><h1>Labels</h1><p class="page-hero__summary">Preview DEVICE, PORT, CABLE, and POWER SUPPLY records before CSV export.</p></div></header>
+<section class="panel panel--full"><p id="labels-status" role="status">Loading accepted label records.</p><a id="labels-export" href="/v1/projects/{{ active_project_id }}/labels.csv" download="{{ label_export_filename }}">Export versioned CSV</a><div id="label-records" class="stack-list"></div></section>
+<section class="panel panel--full" aria-labelledby="label-verification-heading">
+  <h2 id="label-verification-heading">Verify physical application</h2>
+  <form id="label-verification-form">
+    <input type="hidden" name="manifest_id">
+    <label>Canonical device ID <input name="device_id" required></label>
+    <label>Label ID <input name="label_id" required></label>
+    <label>Physical endpoint <select name="label_endpoint"><option>ITEM</option><option>FROM</option><option>TO</option></select></label>
+    <label>Outcome <select name="outcome"><option>PASS</option><option>FAIL</option></select></label>
+    <label>Evidence reference <input name="evidence_reference" required></label>
+    <label>Rationale <input name="rationale" required></label>
+    <label>Authenticator code <input name="totp_code" inputmode="numeric" pattern="[0-9]{6}" required></label>
+    <button type="submit">Record label verification</button>
+  </form>
+  <p id="label-verification-status" role="status"></p>
+</section>

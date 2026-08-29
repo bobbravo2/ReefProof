@@ -1,0 +1,32 @@
+<header class="page-hero">
+  <div><p class="eyebrow">Database diagnostics</p><h1>Inspect the durable SQLite boundary</h1><p class="page-hero__summary">Browse approved schema metadata and bounded row projections. A stored row is diagnostic evidence—not canonical project truth.</p></div>
+  <span class="manual-badge">QUERY ONLY</span>
+</header>
+
+<section class="panel panel--full database-access" aria-labelledby="database-access-heading">
+  <div class="panel__header"><span class="panel__icon" aria-hidden="true">▦</span><div><p class="eyebrow">Authenticated local inspection</p><h2 id="database-access-heading">Open the read-only explorer</h2></div></div>
+  <form id="database-session-form" class="project-session-form"><button type="submit">Refresh database view</button></form>
+  <div id="database-status" class="notice notice--empty" role="status"><span class="notice__icon" aria-hidden="true">○</span><span>Loading approved schema metadata from this local runtime.</span></div>
+</section>
+
+<section id="database-explorer" class="database-explorer" hidden>
+  <aside class="panel database-sidebar" aria-labelledby="database-schema-heading">
+    <p class="eyebrow">Storage schema</p><h2 id="database-schema-heading">Approved tables</h2>
+    <dl class="database-summary"><div><dt>Alembic revision</dt><dd id="database-revision">—</dd></div><div><dt>Integrity</dt><dd id="database-integrity">—</dd></div></dl>
+    <nav id="database-table-list" class="database-table-list" aria-label="Database tables"></nav>
+  </aside>
+  <div class="database-content">
+    <section class="panel" aria-labelledby="database-table-heading">
+      <p class="eyebrow">Selected relation</p><h2 id="database-table-heading">Choose a table</h2><p id="database-table-summary" class="database-table-summary">Table structure and row count appear here.</p>
+      <div class="database-table-frame"><table id="database-column-table"><caption>Column definitions</caption><thead><tr><th scope="col">Column</th><th scope="col">Type</th><th scope="col">Nullable</th><th scope="col">Default</th><th scope="col">Key</th></tr></thead><tbody></tbody></table></div>
+      <div class="database-structure-grid"><section aria-labelledby="database-foreign-keys-heading"><h3 id="database-foreign-keys-heading">Foreign keys</h3><ul id="database-foreign-key-list"></ul></section><section aria-labelledby="database-indexes-heading"><h3 id="database-indexes-heading">Indexes</h3><ul id="database-index-list"></ul></section></div>
+    </section>
+    <section class="panel" aria-labelledby="database-rows-heading">
+      <div class="database-rows-heading"><div><p class="eyebrow">Bounded row projection</p><h2 id="database-rows-heading">Stored rows</h2></div><span class="manual-badge">NO SQL INPUT</span></div>
+      <div class="database-table-frame" tabindex="0" aria-label="Scrollable stored rows"><table id="database-row-table"><caption id="database-row-caption">Choose a table to inspect approved columns.</caption><thead></thead><tbody></tbody></table></div>
+      <div class="database-pagination"><button id="database-previous" type="button" disabled>Previous</button><span id="database-page-status">No page loaded</span><button id="database-next" type="button" disabled>Next</button></div>
+    </section>
+  </div>
+</section>
+
+<div class="page-cta"><div><p class="eyebrow">Epistemic boundary</p><h2>Use Evidence to judge what a row proves</h2></div><a class="button-link" href="/workbench/evidence">Open Evidence →</a></div>

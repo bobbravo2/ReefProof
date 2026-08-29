@@ -23,7 +23,9 @@ from reefproof.cli_domains import auth as auth_commands
 from reefproof.cli_domains import core as core_commands
 from reefproof.cli_domains import database as database_commands
 from reefproof.cli_domains import evaluation as evaluation_commands
+from reefproof.cli_domains import labels as label_commands
 from reefproof.cli_domains import runtime as runtime_commands
+from reefproof.cli_domains import source as source_commands
 from reefproof.settings import ApiSettings, Settings, load_settings
 
 if TYPE_CHECKING:
@@ -128,6 +130,16 @@ auth_app = typer.Typer(
     help="Manage local operator authentication.",
     rich_markup_mode=HELP_MARKUP_MODE,
 )
+source_app = typer.Typer(
+    no_args_is_help=True,
+    help="Validate read-only authored system sources without changing canonical state.",
+    rich_markup_mode=HELP_MARKUP_MODE,
+)
+labels_app = typer.Typer(
+    no_args_is_help=True,
+    help="Export deterministic labels from accepted canonical state.",
+    rich_markup_mode=HELP_MARKUP_MODE,
+)
 totp_auth_app = typer.Typer(
     no_args_is_help=True,
     help="Manage the operator phone authenticator.",
@@ -136,6 +148,8 @@ totp_auth_app = typer.Typer(
 app.add_typer(database_app, name="database")
 app.add_typer(daemon_app, name="daemon")
 app.add_typer(auth_app, name="auth")
+app.add_typer(source_app, name="source")
+app.add_typer(labels_app, name="labels")
 auth_app.add_typer(totp_auth_app, name="totp")
 
 
@@ -369,6 +383,8 @@ runtime_commands.register(app, daemon_app)
 evaluation_commands.register(app)
 database_commands.register(database_app)
 auth_commands.register(auth_app, totp_auth_app)
+source_commands.register(source_app)
+label_commands.register(labels_app)
 
 
 if __name__ == "__main__":

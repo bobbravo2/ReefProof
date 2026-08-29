@@ -22,6 +22,7 @@ fi
 export UV_CACHE_DIR="${UV_CACHE_DIR:-$repository_root/.cache/uv}"
 uv sync --locked
 npm ci
+npm run browser:install
 npm run build
 chmod +x \
   scripts/check-generated-workbench.sh \

@@ -132,6 +132,23 @@ def test_build_targets_print_copy_pasteable_runtime_steps() -> None:
     assert "$(CONTAINER_TOOL)" in makefile
 
 
+def test_build_verify_runs_release_only_runtime_parity_and_exact_identity_checks() -> None:
+    result = subprocess.run(
+        ["make", "-B", "-n", "build/verify"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "scripts/verify-hydros-runtimes.py" in result.stdout
+    assert "--source-cli" in result.stdout
+    assert "--container-tool" in result.stdout
+    assert "--image" in result.stdout
+    assert "--expected-display-identity" in result.stdout
+    assert "--expected-revision" in result.stdout
+
+
 def test_top_level_aliases_delegate_to_domain_targets() -> None:
     # Ensure that the toplevel ReefProof v0.1 Makefile contract follows the SDLC
     makefile = MAKEFILE.read_text(encoding="utf-8")
@@ -299,6 +316,7 @@ def test_build_manifest_checksums_and_verify_bundle(tmp_path: Path) -> None:
     receipt = [
         {
             "Config": {
+                "Cmd": ["version"],
                 "Entrypoint": ["reefproof"],
                 "Env": ["REEFPROOF_DATA_DIRECTORY=/var/lib/reefproof"],
                 "Labels": {
@@ -307,6 +325,7 @@ def test_build_manifest_checksums_and_verify_bundle(tmp_path: Path) -> None:
                     "org.opencontainers.image.title": "ReefProof",
                     "org.opencontainers.image.version": fixture_version,
                 },
+                "User": "reefproof",
             }
         }
     ]
@@ -414,6 +433,10 @@ def test_build_manifest_checksums_and_verify_bundle(tmp_path: Path) -> None:
         "reefproof-image.json",
         "--binary",
         "reefproof",
+        "--expected-display-identity",
+        fixture_identity,
+        "--expected-revision",
+        fixture_revision,
         cwd=repo,
     )
     assert verify.returncode == 0, verify.stdout + verify.stderr

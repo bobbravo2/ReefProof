@@ -1,0 +1,31 @@
+<header class="page-hero">
+  <div>
+    <p class="eyebrow">Sessions</p>
+    <h1>Review durable authorship history</h1>
+    <p class="page-hero__summary">
+      Inspect candidate facts and authority decisions. Session credentials remain
+      process-local and never become project evidence.
+    </p>
+  </div>
+  <span class="manual-badge">LOCAL ONLY</span>
+</header>
+
+<section class="panel panel--full project-access" aria-labelledby="sessions-access-heading">
+  <div class="panel__header">
+    <span class="panel__icon" aria-hidden="true">◎</span>
+    <div><p class="eyebrow">Authenticated project history</p><h2 id="sessions-access-heading">Open sessions and candidate review</h2></div>
+  </div>
+  <form id="project-session-form" class="project-session-form"><button type="submit">Refresh sessions</button></form>
+  <div id="project-status" class="notice notice--empty" role="status"><span class="notice__icon" aria-hidden="true">○</span><span>Loading durable session history from this local runtime.</span></div>
+</section>
+
+<section id="project-sessions" class="session-grid" aria-label="Durable project sessions" hidden>
+  <article class="panel"><p class="eyebrow">Historical context</p><h2>Interview sessions</h2><div id="interview-session-list" class="fact-list"></div></article>
+  <article class="panel"><p class="eyebrow">Candidate state</p><h2>Candidate review queue</h2><div id="candidate-review-list" class="fact-list"></div></article>
+</section>
+
+<section class="session-grid" aria-label="Operator session model">
+  <article class="panel"><span class="route-card__number">01</span><h2>Credentials stay out of evidence</h2><p>The bootstrap secret and authenticator code establish authority but are never persisted as evidence.</p></article>
+  <article class="panel"><span class="route-card__number">02</span><h2>Sessions stay process-local</h2><p>Restarting the service ends browser authority and requires a new authenticated session.</p></article>
+  <article class="panel"><span class="route-card__number">03</span><h2>Authority stays bounded</h2><p>Authority may accept ReefProof state. It cannot mutate HYDROS, publish MQTT, or remediate equipment.</p></article>
+</section>

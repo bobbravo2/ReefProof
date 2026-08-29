@@ -13,6 +13,15 @@ import httpx
 import pyotp
 
 from reefproof.api import create_app
+from reefproof.authored_sources import (
+    AuthoredSourceSnapshot,
+    AuthoredSourceStore,
+    AuthoredSourceTab,
+    AuthoredSystemSource,
+    SourceTabName,
+)
+from reefproof.authored_sources.models import SOURCE_TAB_NAMES, source_snapshot_hash
+from reefproof.configuration import snapshot_hydros_export
 from reefproof.project_state import (
     PROJECT_ID,
     PROJECT_NAME,
@@ -72,7 +81,12 @@ async def _request(
         return await client.request(method, path, headers=headers, json=json)
 
 
-def _app(database: Database, *, now: datetime = NOW):
+def _app(
+    database: Database,
+    *,
+    now: datetime = NOW,
+    authored_source: AuthoredSystemSource | None = None,
+):
     project_store = ProjectStore(database.path)
     project_store.ensure_project(
         Project(
@@ -90,6 +104,7 @@ def _app(database: Database, *, now: datetime = NOW):
         project_store=project_store,
         acceptance_principal_id="acceptance-authority",
         acceptance_principal_display_name="Acceptance authority",
+        authored_source=authored_source,
     )
 
 
@@ -134,6 +149,192 @@ def _enroll_totp(
     )
     assert confirmed.status_code == 204
     return secret
+
+
+def test_label_manifest_and_csv_are_authenticated_backend_projections(tmp_path: Path) -> None:
+    database = Database(tmp_path / "reefproof.sqlite3")
+    database.migrate()
+    app = _app(database)
+
+    denied = asyncio.run(_request(app, "GET", f"/v1/projects/{PROJECT_ID}/labels.csv"))
+    headers = _operator_headers(app)
+    manifest = asyncio.run(
+        _request(app, "GET", f"/v1/projects/{PROJECT_ID}/labels", headers=headers)
+    )
+    csv_response = asyncio.run(
+        _request(app, "GET", f"/v1/projects/{PROJECT_ID}/labels.csv", headers=headers)
+    )
+
+    assert denied.status_code == 401
+    assert manifest.status_code == 200
+    assert manifest.json()["project_name"] == PROJECT_NAME
+    assert manifest.json()["records"] == []
+    assert csv_response.status_code == 200
+    assert csv_response.headers["content-type"].startswith("text/csv")
+    assert csv_response.headers["content-disposition"] == (
+        'attachment; filename="reefproof-primary-reef-system-v0.1.2-labels.csv"'
+    )
+    assert csv_response.text.startswith("label_kind,display_id")
+
+
+def test_authenticated_source_sync_creates_review_without_canonical_mutation(
+    tmp_path: Path,
+) -> None:
+    identifiers = {
+        SourceTabName.BOM: "BOM_ID",
+        SourceTabName.DOMAINS: "DOMAIN_ID",
+        SourceTabName.POWER: "POWER_ID",
+        SourceTabName.DEVICE_INTERFACES: "INTERFACE_ID",
+        SourceTabName.OUTPUTS: "OUTPUT_ID",
+        SourceTabName.MODES: "MODE_ID",
+    }
+    tabs = tuple(
+        AuthoredSourceTab(
+            name=name,
+            source_range=f"'{name.value}'!A1:ZZ10000",
+            rows=((identifiers[name],), (f"{name.value}-1",)),
+        )
+        for name in SOURCE_TAB_NAMES
+    )
+    snapshot = AuthoredSourceSnapshot(
+        source_snapshot_id="snapshot-api-fixture",
+        source_alias="primary-design",
+        spreadsheet_id="sheet-api-fixture",
+        spreadsheet_title="Primary Reef Fixture",
+        fetched_at=NOW,
+        tabs=tabs,
+        snapshot_hash=source_snapshot_hash(tabs),
+    )
+
+    class _Source:
+        fail = False
+
+        def fetch(self) -> AuthoredSourceSnapshot:
+            if self.fail:
+                raise RuntimeError("fixture source unavailable")
+            return snapshot
+
+    database = Database(tmp_path / "reefproof.sqlite3")
+    database.migrate()
+    source = _Source()
+    app = _app(database, now=NOW + timedelta(minutes=1), authored_source=source)
+    headers = _operator_headers(app)
+    sync = asyncio.run(
+        _request(
+            app,
+            "POST",
+            f"/v1/projects/{PROJECT_ID}/authored-sources/google-sheets/sync",
+            headers=headers,
+        )
+    )
+    imports = asyncio.run(
+        _request(app, "GET", f"/v1/projects/{PROJECT_ID}/imports", headers=headers)
+    )
+    status = asyncio.run(
+        _request(
+            app,
+            "GET",
+            f"/v1/projects/{PROJECT_ID}/authored-sources/google-sheets/status",
+            headers=headers,
+        )
+    )
+
+    assert sync.status_code == 201
+    assert sync.json()["review_status"] == "PENDING_REVIEW"
+    assert imports.json()[0]["import_batch_id"] == sync.json()["import_batch_id"]
+    assert status.json()["health"] == "CURRENT"
+    assert ProjectStore(database.path).replay(PROJECT_ID).facts == ()
+    source.fail = True
+    unavailable = asyncio.run(
+        _request(
+            app,
+            "POST",
+            f"/v1/projects/{PROJECT_ID}/authored-sources/google-sheets/sync",
+            headers=headers,
+        )
+    )
+    retained_status = asyncio.run(
+        _request(
+            app,
+            "GET",
+            f"/v1/projects/{PROJECT_ID}/authored-sources/google-sheets/status",
+            headers=headers,
+        )
+    )
+    assert unavailable.status_code == 502
+    assert retained_status.json()["health"] == "UNAVAILABLE"
+    assert (
+        imports.json()
+        == asyncio.run(
+            _request(app, "GET", f"/v1/projects/{PROJECT_ID}/imports", headers=headers)
+        ).json()
+    )
+
+
+def test_invalid_source_sync_retains_diagnostics_without_candidates(tmp_path: Path) -> None:
+    identifiers = {
+        SourceTabName.BOM: "BOM_ID",
+        SourceTabName.DOMAINS: "DOMAIN_ID",
+        SourceTabName.POWER: "POWER_ID",
+        SourceTabName.DEVICE_INTERFACES: "INTERFACE_ID",
+        SourceTabName.OUTPUTS: "OUTPUT_ID",
+        SourceTabName.MODES: "MODE_ID",
+    }
+    tabs = tuple(
+        AuthoredSourceTab(
+            name=name,
+            source_range=f"'{name.value}'!A1:ZZ10000",
+            rows=(
+                (
+                    (identifiers[name], "POWER_DOMAIN_ID", "POWER_DOMAIN_ID")
+                    if name is SourceTabName.DEVICE_INTERFACES
+                    else (identifiers[name],)
+                ),
+                (
+                    ("IF-1", "PD-1", "PD-2")
+                    if name is SourceTabName.DEVICE_INTERFACES
+                    else (f"{name.value}-1",)
+                ),
+            ),
+        )
+        for name in SOURCE_TAB_NAMES
+    )
+    snapshot = AuthoredSourceSnapshot(
+        source_snapshot_id="snapshot-invalid-api",
+        source_alias="primary-design",
+        spreadsheet_id="sheet-api-fixture",
+        spreadsheet_title="Primary Reef Fixture",
+        fetched_at=NOW,
+        tabs=tabs,
+        snapshot_hash=source_snapshot_hash(tabs),
+    )
+
+    class _Source:
+        def fetch(self) -> AuthoredSourceSnapshot:
+            return snapshot
+
+    database = Database(tmp_path / "reefproof.sqlite3")
+    database.migrate()
+    app = _app(database, authored_source=_Source())
+    headers = _operator_headers(app)
+    sync = asyncio.run(
+        _request(
+            app,
+            "POST",
+            f"/v1/projects/{PROJECT_ID}/authored-sources/google-sheets/sync",
+            headers=headers,
+        )
+    )
+    imports = asyncio.run(
+        _request(app, "GET", f"/v1/projects/{PROJECT_ID}/imports", headers=headers)
+    )
+
+    assert sync.status_code == 201
+    assert sync.json()["review_status"] == "INVALID"
+    assert sync.json()["diagnostic_count"] == 1
+    assert imports.json()[0]["review_status"] == "INVALID"
+    assert ProjectStore(database.path).replay(PROJECT_ID).facts == ()
+    assert ProjectStore(database.path).list_sessions(PROJECT_ID) == ()
 
 
 def _seed_candidate(store: ProjectStore, *, suffix: str = "return-flow") -> CandidateFact:
@@ -217,6 +418,118 @@ def _seed_accepted_phase(
     return candidate
 
 
+def _seed_accepted_device(store: ProjectStore) -> str:
+    device_id = f"rp:{PROJECT_ID}:device:dev-1"
+    session = InterviewSession(
+        session_id="session-observed-device-binding",
+        project_id=PROJECT_ID,
+        initiated_by_actor_id="acceptance-authority",
+        initiated_at=NOW,
+        purpose="Accept one authored device identity.",
+        scope_subject_ids=(device_id,),
+    )
+    candidate = CandidateFact(
+        candidate_fact_id="candidate-observed-device-binding",
+        project_id=PROJECT_ID,
+        subject_id=device_id,
+        attribute="identity.external_id",
+        proposed_value="DEV-1",
+        proposed_by_actor_id="acceptance-authority",
+        proposed_at=NOW,
+        evidence_ids=("evidence-authored-device",),
+    )
+    validation = CandidateValidation(
+        candidate_fact_id=candidate.candidate_fact_id,
+        schema_valid=True,
+        domain_valid=True,
+        reason_codes=(),
+        validated_at=NOW,
+    )
+    decision, event = decide_candidate(
+        project=store.load_project(PROJECT_ID),
+        candidate=candidate,
+        validation=validation,
+        deciding_actor=Actor(
+            actor_id="acceptance-authority",
+            display_name="Acceptance authority",
+            role=ActorRole.HUMAN_ACCEPTANCE_AUTHORITY,
+        ),
+        decision=CandidateDecisionKind.ACCEPTED,
+        decision_id="decision-observed-device-binding",
+        decided_at=NOW,
+        rationale="Accepted authored device identity.",
+        next_event_id="event-observed-device-binding",
+        next_sequence=1,
+    )
+    assert event is not None
+    store.record_session(session)
+    store.record_accepted_fact(
+        session.session_id,
+        AcceptedFactRecord(candidate=candidate, decision=decision, event=event),
+    )
+    return device_id
+
+
+def test_observed_identity_binding_is_explicit_authority_bound_and_reconciled(
+    tmp_path: Path,
+) -> None:
+    database = Database(tmp_path / "reefproof.sqlite3")
+    database.migrate()
+    observed = snapshot_hydros_export(
+        Path("tests/fixtures/configuration/hydros-download-config-sanitized.json"),
+        captured_at=NOW,
+    )
+    assert database.record_snapshot(observed)
+    clock = [NOW]
+    store = ProjectStore(database.path)
+    store.ensure_project(
+        Project(
+            project_id=PROJECT_ID,
+            name=PROJECT_NAME,
+            acceptance_authority_principal_id="acceptance-authority",
+            created_at=NOW,
+        )
+    )
+    device_id = _seed_accepted_device(store)
+    app = create_app(
+        runtime_state=_runtime_state,
+        database=database,
+        now=lambda: clock[0],
+        bootstrap_secret=TOKEN,
+        project_store=store,
+        acceptance_principal_id="acceptance-authority",
+        acceptance_principal_display_name="Acceptance authority",
+    )
+    headers = _operator_headers(app)
+    secret = _enroll_totp(app, headers, tmp_path / "operator-totp.json", at=NOW)
+    clock[0] += timedelta(seconds=30)
+    observed_entity_id = observed.entities[0].reefproof_id
+
+    response = asyncio.run(
+        _request(
+            app,
+            "POST",
+            f"/v1/projects/{PROJECT_ID}/reconciliation/bindings",
+            headers=headers,
+            json={
+                "canonical_device_id": device_id,
+                "observed_entity_id": observed_entity_id,
+                "evidence_reference": "onsite identity comparison photo",
+                "rationale": "Matched the accepted device to this observed identity.",
+                "totp_code": pyotp.TOTP(secret).at(clock[0]),
+            },
+        )
+    )
+
+    assert response.status_code == 201, response.text
+    assert response.json()["matched_count"] == 1
+    assert response.json()["items"][0]["canonical_subject_id"] == device_id
+    binding = AuthoredSourceStore(database.path).list_bindings(PROJECT_ID)[0]
+    assert binding.source_system == "hydros"
+    assert binding.import_batch_id is None
+    assert binding.evidence_reference == "onsite identity comparison photo"
+
+
 def test_operator_auth_and_totp_lifecycle_events_are_logged(
     tmp_path: Path,
     caplog,
@@ -293,6 +606,9 @@ def test_project_reads_are_authenticated_typed_and_no_llm(tmp_path: Path) -> Non
     description = asyncio.run(_request(app, "GET", f"/v1/projects/{PROJECT_ID}", headers=headers))
     state = asyncio.run(_request(app, "GET", f"/v1/projects/{PROJECT_ID}/state", headers=headers))
     brief = asyncio.run(_request(app, "GET", f"/v1/projects/{PROJECT_ID}/brief", headers=headers))
+    reconciliation = asyncio.run(
+        _request(app, "GET", f"/v1/projects/{PROJECT_ID}/reconciliation", headers=headers)
+    )
     sessions = asyncio.run(
         _request(app, "GET", f"/v1/projects/{PROJECT_ID}/sessions", headers=headers)
     )
@@ -304,8 +620,23 @@ def test_project_reads_are_authenticated_typed_and_no_llm(tmp_path: Path) -> Non
     assert description.json() == {
         "project_id": PROJECT_ID,
         "canonical": ["state"],
-        "derived": ["brief"],
-        "candidate": ["candidates"],
+        "derived": [
+            "brief",
+            "authored-sources",
+            "imports",
+            "reconciliation",
+            "commissioning",
+            "labels",
+            "labels.csv",
+        ],
+        "candidate": [
+            "candidates",
+            "imports/{import_batch_id}/review",
+            "reconciliation/bindings",
+            "commissioning/verifications",
+            "commissioning/failure-mode-dispositions",
+            "commissioning/label-verifications",
+        ],
         "historical": ["sessions"],
         "llm_required": False,
         "runtime_authority": "HYDROS",
@@ -319,6 +650,16 @@ def test_project_reads_are_authenticated_typed_and_no_llm(tmp_path: Path) -> Non
     }
     assert brief.json()["recommended_next_action"]["status"] == "UNKNOWN"
     assert brief.json()["current_posture"]["posture"] == "UNKNOWN"
+    assert reconciliation.json() == {
+        "project_id": PROJECT_ID,
+        "observed_snapshot_hash": None,
+        "observed_captured_at": None,
+        "items": [],
+        "matched_count": 0,
+        "authored_only_count": 0,
+        "observed_only_count": 0,
+        "conflict_count": 0,
+    }
     assert sessions.json()[0]["initiated_by_actor_id"] == "acceptance-authority"
     assert candidates.json()[0]["candidate"]["candidate_fact_id"] == (candidate.candidate_fact_id)
     assert candidates.json()[0]["decision"] is None

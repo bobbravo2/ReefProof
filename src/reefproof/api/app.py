@@ -48,10 +48,13 @@ from reefproof.api.workbench import (
     ReturnFlowPolicyTemplate,
     preview_flow,
 )
+from reefproof.api.workbench_pages import WORKBENCH_PAGES, workbench_page
 from reefproof.auth_totp import TotpState
+from reefproof.authored_sources import AuthoredSystemSource
 from reefproof.invariants import registered_invariant_ids
+from reefproof.labels import label_export_filename
 from reefproof.physical import PhysicalTwin, mock_collective_physical_twin
-from reefproof.project_state import PROJECT_ID
+from reefproof.project_state import PROJECT_ID, PROJECT_NAME
 from reefproof.project_store import ProjectStore
 from reefproof.rules import InvariantCatalog, invariant_catalog
 from reefproof.service import AssuranceReadiness, RuntimeState, evaluate_readiness
@@ -118,15 +121,6 @@ class WorkbenchSessionRequest(BaseModel):
     bootstrap_secret: str | None = Field(default=None, json_schema_extra={"writeOnly": True})
     totp_code: str | None = Field(default=None, json_schema_extra={"writeOnly": True})
 
-
-_WORKBENCH_PAGES = (
-    ("overview", "Overview", "/workbench"),
-    ("system-map", "System Map", "/workbench/system-map"),
-    ("assurance", "Assurance", "/workbench/assurance"),
-    ("evidence", "Evidence", "/workbench/evidence"),
-    ("sessions", "Sessions", "/workbench/sessions"),
-    ("database", "Database", "/workbench/database"),
-)
 
 _OPERATOR_LOG = logging.getLogger("uvicorn.error")
 
@@ -214,6 +208,9 @@ def create_app(
     acceptance_principal_display_name: str = "Local acceptance authority",
     project_store: ProjectStore | None = None,
     active_project_id: str = PROJECT_ID,
+    active_project_name: str = PROJECT_NAME,
+    authored_source: AuthoredSystemSource | None = None,
+    authored_source_freshness_seconds: int = 900,
     totp_path: Path | None = None,
     hosted_operations: HostedOperations | None = None,
     session_https_only: bool = False,
@@ -294,6 +291,8 @@ def create_app(
         now=now,
         totp=totp,
         active_project_id=active_project_id,
+        authored_source=authored_source,
+        authored_source_freshness_seconds=authored_source_freshness_seconds,
     )
     register_database_explorer_routes(
         app,
@@ -401,16 +400,22 @@ def create_app(
         )
 
     def render_workbench_page(request: Request, page: str) -> Response:
-        page_label = next(label for slug, label, _route in _WORKBENCH_PAGES if slug == page)
+        registered_page = workbench_page(page)
         return templates.TemplateResponse(
             request=request,
             name="workbench.html",
             context={
                 "asset_version": asset_version,
-                "navigation": _WORKBENCH_PAGES,
+                "navigation": tuple(
+                    (item.slug, item.label, item.route) for item in WORKBENCH_PAGES
+                ),
                 "page": page,
-                "page_label": page_label,
+                "page_label": registered_page.label,
                 "active_project_id": active_project_id,
+                "active_project_name": active_project_name,
+                "label_export_filename": label_export_filename(
+                    active_project_name, version=__version__
+                ),
             },
         )
 
@@ -421,6 +426,22 @@ def create_app(
     @app.get("/workbench/system-map", response_class=HTMLResponse)
     def workbench_system_map(request: Request) -> Response:
         return render_workbench_page(request, "system-map")
+
+    @app.get("/workbench/source", response_class=HTMLResponse)
+    def workbench_source(request: Request) -> Response:
+        return render_workbench_page(request, "source")
+
+    @app.get("/workbench/imports", response_class=HTMLResponse)
+    def workbench_imports(request: Request) -> Response:
+        return render_workbench_page(request, "source")
+
+    @app.get("/workbench/commissioning", response_class=HTMLResponse)
+    def workbench_commissioning(request: Request) -> Response:
+        return render_workbench_page(request, "commissioning")
+
+    @app.get("/workbench/labels", response_class=HTMLResponse)
+    def workbench_labels(request: Request) -> Response:
+        return render_workbench_page(request, "labels")
 
     @app.get("/workbench/assurance", response_class=HTMLResponse)
     def workbench_assurance(request: Request) -> Response:
@@ -971,6 +992,24 @@ def create_app(
             ("/v1/projects/{project_id}/candidates/{candidate_fact_id}/review", "post"): (
                 "acceptanceAuthority"
             ),
+            ("/v1/projects/{project_id}/imports/{import_batch_id}/review", "post"): (
+                "acceptanceAuthority"
+            ),
+            (
+                "/v1/projects/{project_id}/authored-sources/google-sheets/sync",
+                "post",
+            ): "acceptanceAuthority",
+            ("/v1/projects/{project_id}/commissioning/verifications", "post"): (
+                "acceptanceAuthority"
+            ),
+            ("/v1/projects/{project_id}/reconciliation/bindings", "post"): ("acceptanceAuthority"),
+            ("/v1/projects/{project_id}/commissioning/label-verifications", "post"): (
+                "acceptanceAuthority"
+            ),
+            (
+                "/v1/projects/{project_id}/commissioning/failure-mode-dispositions",
+                "post",
+            ): "acceptanceAuthority",
             ("/v1/operations/diagnostics", "get"): "hostedDesktopOperation",
             ("/v1/operations/backups", "post"): "hostedDesktopOperation",
             ("/v1/operations/backups/{backup_id}/download", "post"): ("hostedDesktopOperation"),
@@ -1000,6 +1039,30 @@ def create_app(
             ("/v1/projects/{project_id}/candidates/{candidate_fact_id}/review", "post"): (
                 "audit; decision/domain event on success"
             ),
+            ("/v1/projects/{project_id}/imports/{import_batch_id}/review", "post"): (
+                "audit; immutable candidate decisions, canonical events, and external identity "
+                "bindings on acceptance"
+            ),
+            (
+                "/v1/projects/{project_id}/authored-sources/google-sheets/sync",
+                "post",
+            ): (
+                "audit; immutable source snapshot, import batch, and review candidates on "
+                "changed valid content"
+            ),
+            ("/v1/projects/{project_id}/commissioning/verifications", "post"): (
+                "audit; immutable commissioning verification on success"
+            ),
+            ("/v1/projects/{project_id}/reconciliation/bindings", "post"): (
+                "audit; immutable explicit observed-to-canonical identity binding"
+            ),
+            ("/v1/projects/{project_id}/commissioning/label-verifications", "post"): (
+                "audit; immutable physical label verification on success"
+            ),
+            (
+                "/v1/projects/{project_id}/commissioning/failure-mode-dispositions",
+                "post",
+            ): "audit; immutable failure-mode disposition on success",
             ("/v1/database/schema", "get"): "query-only; none",
             ("/v1/database/tables/{table_name}", "get"): "query-only; none",
             ("/v1/operations/backups", "post"): "audit; staged backup on success",

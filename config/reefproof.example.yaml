@@ -15,6 +15,15 @@ hydros:
   request_timeout_seconds: 20
   credential_refresh_margin_seconds: 300
 
+authored_sources:
+  google_sheets:
+    enabled: false
+    spreadsheet_id: null
+    source_alias: primary-design
+    # Keep this secret file outside the repository and persisted evidence.
+    credential_file: null
+    freshness_seconds: 3600
+
 evaluation:
   critical_unknown_policy: alert
   evaluation_deadline_seconds: 15

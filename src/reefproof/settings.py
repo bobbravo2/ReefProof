@@ -117,6 +117,26 @@ class ProjectSettings(_FrozenModel):
     )
 
 
+class GoogleSheetsSettings(_FrozenModel):
+    enabled: bool = False
+    spreadsheet_id: str | None = None
+    source_alias: str = Field(default="primary-design", min_length=1)
+    credential_file: Path | None = None
+    freshness_seconds: int = Field(default=3600, gt=0)
+
+    @model_validator(mode="after")
+    def require_live_source_configuration(self) -> GoogleSheetsSettings:
+        if self.enabled and (not self.spreadsheet_id or self.credential_file is None):
+            raise ValueError(
+                "enabled Google Sheets source requires spreadsheet_id and credential_file"
+            )
+        return self
+
+
+class AuthoredSourcesSettings(_FrozenModel):
+    google_sheets: GoogleSheetsSettings = GoogleSheetsSettings()
+
+
 class AnnotationsSettings(_FrozenModel):
     path: Path = Path("config/system.yaml")
 
@@ -136,6 +156,7 @@ class Settings(_FrozenModel):
     alerts: AlertsSettings = AlertsSettings()
     api: ApiSettings = ApiSettings()
     project: ProjectSettings = ProjectSettings()
+    authored_sources: AuthoredSourcesSettings = AuthoredSourcesSettings()
     annotations: AnnotationsSettings = AnnotationsSettings()
     invariants: InvariantsSettings = InvariantsSettings()
 
@@ -230,6 +251,8 @@ def _apply_environment(document: dict[str, Any]) -> dict[str, Any]:
     api = dict(result.get("api", {}))
     storage = dict(result.get("storage", {}))
     project = dict(result.get("project", {}))
+    authored_sources = dict(result.get("authored_sources", {}))
+    google_sheets = dict(authored_sources.get("google_sheets", {}))
     reefproof_mapping = {
         "timezone": "REEFPROOF_TIMEZONE",
         "data_directory": "REEFPROOF_DATA_DIRECTORY",
@@ -265,6 +288,20 @@ def _apply_environment(document: dict[str, Any]) -> dict[str, Any]:
             project[field] = os.environ[variable]
     if project:
         result["project"] = project
+    google_sheets_mapping = {
+        "spreadsheet_id": "REEFPROOF_GOOGLE_SHEETS_ID",
+        "source_alias": "REEFPROOF_GOOGLE_SHEETS_ALIAS",
+        "credential_file": "REEFPROOF_GOOGLE_CREDENTIAL_FILE",
+    }
+    for field, variable in google_sheets_mapping.items():
+        if variable in os.environ:
+            google_sheets[field] = os.environ[variable]
+    if "REEFPROOF_GOOGLE_SHEETS_ENABLED" in os.environ:
+        google_sheets["enabled"] = os.environ["REEFPROOF_GOOGLE_SHEETS_ENABLED"]
+    if google_sheets:
+        authored_sources["google_sheets"] = google_sheets
+    if authored_sources:
+        result["authored_sources"] = authored_sources
     return result
 
 
